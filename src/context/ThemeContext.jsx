@@ -17,9 +17,7 @@ export const ThemeContext = createContext();
 export function ThemeProvider({ children }) {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem("theme");
-    if (saved) return saved === "dark";
-    // Check system preference
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return saved === "dark";
   });
 
   // Sync document class list and localStorage on isDarkMode changes
@@ -37,7 +35,17 @@ export function ThemeProvider({ children }) {
    * Toggles the current theme between dark and light mode.
    */
   const toggleTheme = () => {
-    setIsDarkMode((prev) => !prev);
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      const root = window.document.documentElement;
+      if (next) {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+      localStorage.setItem("theme", next ? "dark" : "light");
+      return next;
+    });
   };
 
   return (

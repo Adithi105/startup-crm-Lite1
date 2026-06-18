@@ -71,14 +71,14 @@ export default function QuickActions({ onAddLeadClick, leads }) {
   };
 
   return (
-    <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs">
+    <div className="p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xs">
       
       {/* Title */}
       <div className="mb-4 select-none">
-        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white">
           Quick Actions
         </h3>
-        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+        <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
           Execute common CRM operations instantly
         </p>
       </div>
@@ -102,18 +102,18 @@ export default function QuickActions({ onAddLeadClick, leads }) {
         {/* View Directory */}
         <Link
           to="/leads"
-          className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors"
+          className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-colors"
         >
-          <ListFilter size={14} className="text-slate-400 dark:text-slate-500" />
+          <ListFilter size={14} className="text-gray-500 dark:text-gray-400" />
           View All Leads
         </Link>
 
         {/* Export Data */}
         <button
           onClick={handleExportCSV}
-          className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+          className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-colors cursor-pointer"
         >
-          <Download size={14} className="text-slate-400 dark:text-slate-500" />
+          <Download size={14} className="text-gray-500 dark:text-gray-400" />
           Export Data (CSV)
         </button>
 

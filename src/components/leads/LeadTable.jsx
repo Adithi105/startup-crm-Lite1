@@ -15,12 +15,12 @@ import StatusBadge from "./StatusBadge";
 
 export default function LeadTable({ leads, onEdit, onDelete }) {
   return (
-    <div className="premium-card overflow-hidden">
+    <div className="premium-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-left text-xs">
           {/* ── Table Header ──────────────────────────────────────────────── */}
           <thead>
-            <tr className="bg-slate-50 dark:bg-slate-900 border-b border-[var(--border-main)] text-[var(--text-secondary)] font-semibold uppercase tracking-wider text-[10px] select-none">
+            <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wider text-[10px] select-none">
               <th className="p-4">Name</th>
               <th className="p-4">Company</th>
               <th className="p-4">Status</th>
@@ -32,12 +32,12 @@ export default function LeadTable({ leads, onEdit, onDelete }) {
           </thead>
 
           {/* ── Table Body ────────────────────────────────────────────────── */}
-          <tbody className="divide-y divide-[var(--border-main)]">
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
             {leads.length > 0 ? (
               leads.map((lead) => (
                 <tr
                   key={lead.id}
-                  className="group hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors"
+                  className="group hover:bg-gray-50/70 dark:hover:bg-gray-700/40 transition-colors"
                 >
                   {/* Name */}
                   <td className="p-4">
@@ -51,14 +51,14 @@ export default function LeadTable({ leads, onEdit, onDelete }) {
                           .join("")
                           .toUpperCase()}
                       </div>
-                      <span className="font-semibold text-[var(--text-main)] truncate">
+                      <span className="font-semibold text-gray-900 dark:text-white truncate">
                         {lead.name}
                       </span>
                     </div>
                   </td>
 
                   {/* Company */}
-                  <td className="p-4 text-[var(--text-secondary)] font-medium truncate max-w-[150px]">
+                  <td className="p-4 text-gray-500 dark:text-gray-400 font-medium truncate max-w-[150px]">
                     {lead.company}
                   </td>
 
@@ -68,32 +68,32 @@ export default function LeadTable({ leads, onEdit, onDelete }) {
                   </td>
 
                   {/* Email (hidden on small screens) */}
-                  <td className="p-4 hidden md:table-cell text-[var(--text-secondary)] truncate max-w-[180px]">
+                  <td className="p-4 hidden md:table-cell text-gray-500 dark:text-gray-400 truncate max-w-[180px]">
                     {lead.email || "—"}
                   </td>
 
                   {/* Source (hidden on small/medium screens) */}
                   <td className="p-4 hidden lg:table-cell">
-                    <span className="text-[9px] font-semibold text-[var(--text-secondary)] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md border border-[var(--border-main)]">
+                    <span className="text-[9px] font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 px-1.5 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
                       {lead.source || "—"}
                     </span>
                   </td>
 
                   {/* Date Added (hidden on small/medium screens) */}
-                  <td className="p-4 hidden lg:table-cell text-[var(--text-secondary)] font-medium">
+                  <td className="p-4 hidden lg:table-cell text-gray-500 dark:text-gray-400 font-medium">
                     {lead.dateCreated || "—"}
                   </td>
 
                   {/* Action buttons */}
                   <td className="p-4">
-                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-150">
+                    <div className="flex items-center justify-end gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 transition-opacity duration-150">
                       {/* Edit */}
                       <button
                         type="button"
                         onClick={() => onEdit(lead)}
                         aria-label={`Edit ${lead.name}`}
                         title="Edit lead"
-                        className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                        className="p-3 md:p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
                       >
                         <Pencil size={13} />
                       </button>
@@ -104,7 +104,7 @@ export default function LeadTable({ leads, onEdit, onDelete }) {
                         onClick={() => onDelete(lead.id)}
                         aria-label={`Delete ${lead.name}`}
                         title="Delete lead"
-                        className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/40"
+                        className="p-3 md:p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/40 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
                       >
                         <Trash2 size={13} />
                       </button>
@@ -117,10 +117,10 @@ export default function LeadTable({ leads, onEdit, onDelete }) {
               <tr>
                 <td
                   colSpan="7"
-                  className="text-center py-16 text-xs text-[var(--text-secondary)]"
+                  className="text-center py-16 text-xs text-gray-500 dark:text-gray-400"
                 >
                   <div className="flex flex-col items-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                    <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-900 flex items-center justify-center text-gray-400 dark:text-gray-500">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="18"

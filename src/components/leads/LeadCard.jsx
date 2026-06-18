@@ -19,7 +19,7 @@ import StatusBadge from "./StatusBadge";
  * Map status → avatar ring color for visual identity at a glance.
  */
 const RING_COLORS = {
-  New:                 "ring-slate-300   dark:ring-slate-600",
+  New:                 "ring-gray-300   dark:ring-gray-600",
   Contacted:           "ring-amber-300   dark:ring-amber-700",
   "Meeting Scheduled": "ring-violet-300  dark:ring-violet-700",
   "Proposal Sent":     "ring-indigo-300  dark:ring-indigo-700",
@@ -28,16 +28,16 @@ const RING_COLORS = {
 };
 
 const BG_COLORS = {
-  New:                 "bg-slate-100   text-slate-600   dark:bg-slate-800  dark:text-slate-300",
+  New:                 "bg-gray-100   text-gray-600   dark:bg-gray-800  dark:text-gray-300",
   Contacted:           "bg-amber-50    text-amber-700   dark:bg-amber-900/30 dark:text-amber-400",
   "Meeting Scheduled": "bg-violet-50   text-violet-700  dark:bg-violet-900/30 dark:text-violet-400",
   "Proposal Sent":     "bg-indigo-50   text-indigo-700  dark:bg-indigo-900/30 dark:text-indigo-400",
   Won:                 "bg-emerald-50  text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  Lost:                "bg-red-50      text-red-700     dark:bg-red-900/30 dark:text-red-400",
+  Lost:                "bg-red-550 bg-red-50      text-red-700     dark:bg-red-900/30 dark:text-red-400",
 };
 
-const DEFAULT_RING = "ring-slate-200 dark:ring-slate-700";
-const DEFAULT_BG   = "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300";
+const DEFAULT_RING = "ring-gray-200 dark:ring-gray-700";
+const DEFAULT_BG   = "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300";
 
 export default function LeadCard({ lead, onEdit, onDelete }) {
   // Derive initials for the avatar (up to 2 chars)
@@ -58,12 +58,12 @@ export default function LeadCard({ lead, onEdit, onDelete }) {
       : lead.status === "Lost"
       ? "bg-red-400"
       : lead.status === "New"
-      ? "bg-slate-300 dark:bg-slate-600"
+      ? "bg-gray-300 dark:bg-gray-600"
       : "bg-blue-400";
 
   return (
     <article
-      className="premium-card premium-card-hover group flex flex-col gap-4 p-4 relative overflow-hidden"
+      className="premium-card premium-card-hover bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-xl group flex flex-col gap-4 p-4 relative overflow-hidden"
       aria-label={`Lead card for ${lead.name}`}
     >
       {/* ── Decorative top accent bar (status-colored) ──────────────────── */}
@@ -85,19 +85,19 @@ export default function LeadCard({ lead, onEdit, onDelete }) {
 
           {/* Name + Company */}
           <div className="min-w-0">
-            <h3 className="text-sm font-bold text-[var(--text-main)] truncate leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
               {lead.name}
             </h3>
-            <p className="flex items-center gap-1 text-[11px] text-[var(--text-secondary)] mt-0.5 truncate">
+            <p className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
               <Building2 size={10} className="shrink-0" />
               {lead.company}
             </p>
           </div>
         </div>
 
-        {/* Action buttons – visible on hover / focus for clean UI */}
+        {/* Action buttons – visible always on mobile/tablet for touch screens, hover-triggered on desktop */}
         <div
-          className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-150"
+          className="flex items-center gap-1 shrink-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 md:focus-within:opacity-100 transition-opacity duration-150"
           role="group"
           aria-label={`Actions for ${lead.name}`}
         >
@@ -107,7 +107,7 @@ export default function LeadCard({ lead, onEdit, onDelete }) {
             onClick={() => onEdit(lead)}
             aria-label={`Edit ${lead.name}`}
             title="Edit lead"
-            className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+            className="p-3 md:p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20 dark:hover:text-blue-400 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/40 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
           >
             <Pencil size={13} />
           </button>
@@ -118,7 +118,7 @@ export default function LeadCard({ lead, onEdit, onDelete }) {
             onClick={() => onDelete(lead.id)}
             aria-label={`Delete ${lead.name}`}
             title="Delete lead"
-            className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/40"
+            className="p-3 md:p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-all duration-150 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/40 min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
           >
             <Trash2 size={13} />
           </button>
@@ -131,7 +131,7 @@ export default function LeadCard({ lead, onEdit, onDelete }) {
       </div>
 
       {/* ── Contact info ───────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-2 text-xs text-[var(--text-secondary)] border-t border-[var(--border-main)] pt-3 mt-auto">
+      <div className="flex flex-col gap-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-3 mt-auto">
         {/* Email link */}
         <a
           href={`mailto:${lead.email}`}
@@ -139,7 +139,7 @@ export default function LeadCard({ lead, onEdit, onDelete }) {
           aria-label={`Email ${lead.name} at ${lead.email}`}
           onClick={(e) => e.stopPropagation()}
         >
-          <Mail size={11} className="shrink-0 text-slate-400" />
+          <Mail size={11} className="shrink-0 text-gray-400 dark:text-gray-500" />
           <span className="truncate">{lead.email || "—"}</span>
         </a>
 
@@ -154,7 +154,7 @@ export default function LeadCard({ lead, onEdit, onDelete }) {
           aria-label={lead.phone ? `Call ${lead.name} at ${lead.phone}` : "No phone number"}
           onClick={(e) => e.stopPropagation()}
         >
-          <Phone size={11} className="shrink-0 text-slate-400" />
+          <Phone size={11} className="shrink-0 text-gray-400 dark:text-gray-500" />
           <span className="truncate">{lead.phone || "No phone number"}</span>
         </a>
       </div>
@@ -162,7 +162,7 @@ export default function LeadCard({ lead, onEdit, onDelete }) {
       {/* ── Source tag (bottom-right) ───────────────────────────────────── */}
       {lead.source && (
         <div className="absolute bottom-3 right-3">
-          <span className="text-[9px] font-semibold text-[var(--text-secondary)] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-md border border-[var(--border-main)]">
+          <span className="text-[9px] font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 px-1.5 py-0.5 rounded-md border border-gray-200 dark:border-gray-700">
             {lead.source}
           </span>
         </div>

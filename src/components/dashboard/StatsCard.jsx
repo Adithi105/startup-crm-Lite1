@@ -48,11 +48,11 @@ export default function StatsCard({ title, value, icon: Icon, change, color }) {
   const isZero = changeStr.startsWith("0") || changeStr === "";
 
   return (
-    <div className="flex flex-col justify-between p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs hover:shadow-sm transition-all duration-200">
+    <div className="flex flex-col justify-between p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xs hover:shadow-sm transition-all duration-200">
       
       {/* Top section: Title and Icon */}
       <div className="flex justify-between items-start">
-        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-tight select-none">
+        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 tracking-tight select-none">
           {title}
         </span>
         <span className={`p-2 rounded-lg ${activeTheme.bg} ${activeTheme.text} border ${activeTheme.border} shrink-0`}>
@@ -62,7 +62,7 @@ export default function StatsCard({ title, value, icon: Icon, change, color }) {
 
       {/* Bottom section: Value and Trend Change */}
       <div className="mt-4">
-        <h3 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+        <h3 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
           {value}
         </h3>
         
@@ -82,7 +82,7 @@ export default function StatsCard({ title, value, icon: Icon, change, color }) {
             </span>
           )}
           
-          <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">
+          <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400">
             vs last month
           </span>
         </div>

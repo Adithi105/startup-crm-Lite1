@@ -14,30 +14,30 @@ export default function EmptyState({ isFilterActive, onClearFilters, totalLeadsC
   const isPipelineEmpty = totalLeadsCount === 0;
 
   return (
-    <div className="flex flex-col items-center justify-center text-center p-8 md:p-12 premium-card bg-[var(--bg-surface)] border border-[var(--border-main)] rounded-xl py-16 animate-in fade-in duration-200">
+    <div className="flex flex-col items-center justify-center text-center p-8 md:p-12 premium-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-16 animate-in fade-in duration-200 shadow-sm">
       {isPipelineEmpty ? (
         <>
           {/* Visual indicator for empty pipeline */}
           <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400">
             <Users size={28} />
           </div>
-          <h3 className="text-sm font-bold text-[var(--text-main)] mb-1">
+          <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">
             Your pipeline is empty
           </h3>
-          <p className="text-xs text-[var(--text-secondary)] max-w-xs leading-normal">
+          <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs leading-normal">
             Get started by adding your first prospect. Track your sales lifecycle from lead to won!
           </p>
         </>
       ) : (
         <>
           {/* Visual indicator for empty search/filter results */}
-          <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-slate-400 dark:text-slate-500">
+          <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-900 flex items-center justify-center mb-4 text-gray-400 dark:text-gray-500">
             <Search size={24} />
           </div>
-          <h3 className="text-sm font-bold text-[var(--text-main)] mb-1">
+          <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">
             No leads found
           </h3>
-          <p className="text-xs text-[var(--text-secondary)] max-w-xs mb-4 leading-normal">
+          <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mb-4 leading-normal">
             No leads match your current search or filter criteria. Try adjusting your settings.
           </p>
           {isFilterActive && onClearFilters && (

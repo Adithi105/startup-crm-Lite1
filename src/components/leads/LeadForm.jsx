@@ -47,7 +47,7 @@ function FormField({ id, label, required, error, icon: Icon, children }) {
       {/* Label */}
       <label
         htmlFor={id}
-        className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)]"
+        className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400"
       >
         {Icon && <Icon size={12} className="shrink-0" />}
         {label}
@@ -90,13 +90,13 @@ FormField.propTypes = {
  */
 const inputCls = (hasError = false) =>
   [
-    "w-full px-3 py-2 text-xs rounded-lg border transition-all duration-150",
-    "bg-slate-50 dark:bg-slate-900",
+    "w-full px-3 py-3 md:py-2 min-h-[44px] md:min-h-0 text-xs rounded-lg border transition-all duration-150",
+    "bg-gray-50 dark:bg-gray-900",
     "focus:outline-none focus:ring-2 focus:border-transparent",
-    "text-[var(--text-main)] placeholder:text-slate-400",
+    "text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500",
     hasError
       ? "border-red-400 focus:ring-red-400/40"
-      : "border-[var(--border-main)] focus:ring-blue-500/40 focus:border-blue-500",
+      : "border-gray-200 dark:border-gray-700 focus:ring-blue-500/40 focus:border-blue-500",
   ].join(" ");
 
 // ─── Main Component ─────────────────────────────────────────────────────────
@@ -321,17 +321,17 @@ export default function LeadForm({ initialData, onSubmit, onCancel }) {
       </div>
 
       {/* ── Required fields notice ──────────────────────────────────────── */}
-      <p className="text-[10px] text-[var(--text-secondary)]">
+      <p className="text-[10px] text-gray-500 dark:text-gray-400">
         Fields marked with <span className="text-red-500 font-bold">*</span> are required.
       </p>
 
       {/* ── Action Buttons ──────────────────────────────────────────────── */}
-      <div className="flex justify-end items-center gap-2.5 pt-2 border-t border-[var(--border-main)]">
+      <div className="flex justify-end items-center gap-2.5 pt-2 border-t border-gray-200 dark:border-gray-700">
         {/* Cancel */}
         <button
           type="button"
           onClick={onCancel}
-          className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg border border-[var(--border-main)] text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-[var(--text-main)] transition-all duration-150 cursor-pointer"
+          className="flex items-center justify-center gap-1.5 px-4 h-11 md:h-9 text-xs font-semibold rounded-lg border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-all duration-150 cursor-pointer"
         >
           <X size={13} />
           Cancel
@@ -340,7 +340,7 @@ export default function LeadForm({ initialData, onSubmit, onCancel }) {
         {/* Submit */}
         <button
           type="submit"
-          className="flex items-center gap-1.5 px-5 py-2 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white shadow-sm shadow-blue-500/20 transition-all duration-150 cursor-pointer"
+          className="flex items-center justify-center gap-1.5 px-5 h-11 md:h-9 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 active:scale-95 text-white shadow-sm shadow-blue-500/20 transition-all duration-150 cursor-pointer"
         >
           {isEditMode ? "Save Changes" : "Add Lead"}
         </button>

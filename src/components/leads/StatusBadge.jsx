@@ -16,8 +16,8 @@ import PropTypes from "prop-types";
 const STATUS_STYLES = {
   // ──── Active pipeline stages ──────────────────────────────────────────────
   New: {
-    badge: "bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700",
-    dot:   "bg-slate-400",
+    badge: "bg-gray-100 text-gray-700 border border-gray-200 dark:bg-gray-800/60 dark:text-gray-300 dark:border-gray-700",
+    dot:   "bg-gray-400",
   },
   Contacted: {
     badge: "bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/40",
@@ -44,8 +44,8 @@ const STATUS_STYLES = {
 
 /** Fallback for any unknown / legacy status values */
 const DEFAULT_STYLE = {
-  badge: "bg-slate-50 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700",
-  dot:   "bg-slate-400",
+  badge: "bg-gray-50 text-gray-600 border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700",
+  dot:   "bg-gray-400",
 };
 
 export default function StatusBadge({ status, size = "md" }) {

@@ -104,6 +104,15 @@ export default function Leads() {
    */
   const handleFormSubmit = useCallback(
     (formData) => {
+      const isDark = document.documentElement.classList.contains("dark");
+      const toastStyle = {
+        borderRadius: "10px",
+        background: isDark ? "#1f2937" : "#fff",
+        color: isDark ? "#fff" : "#111827",
+        border: isDark ? "1px solid #374151" : "1px solid #e5e7eb",
+        fontSize: "13px",
+      };
+
       if (selectedLead) {
         // ── UPDATE existing lead ──────────────────────────────────────────
         updateLead(selectedLead.id, {
@@ -116,13 +125,7 @@ export default function Leads() {
         });
         toast.success(`${formData.name} updated successfully`, {
           duration: 3000,
-          style: {
-            borderRadius: "10px",
-            background: "var(--bg-surface)",
-            color: "var(--text-main)",
-            border: "1px solid var(--border-main)",
-            fontSize: "13px",
-          },
+          style: toastStyle,
           iconTheme: { primary: "#22c55e", secondary: "#fff" },
         });
       } else {
@@ -142,13 +145,7 @@ export default function Leads() {
         });
         toast.success(`${formData.name} added to pipeline`, {
           duration: 3000,
-          style: {
-            borderRadius: "10px",
-            background: "var(--bg-surface)",
-            color: "var(--text-main)",
-            border: "1px solid var(--border-main)",
-            fontSize: "13px",
-          },
+          style: toastStyle,
           iconTheme: { primary: "#22c55e", secondary: "#fff" },
         });
       }
@@ -167,14 +164,15 @@ export default function Leads() {
       if (!lead) return;
 
       if (window.confirm(`Are you sure you want to delete "${lead.name}"?`)) {
+        const isDark = document.documentElement.classList.contains("dark");
         deleteLead(leadId);
         toast.error(`${lead.name} removed from pipeline`, {
           duration: 3000,
           style: {
             borderRadius: "10px",
-            background: "var(--bg-surface)",
-            color: "var(--text-main)",
-            border: "1px solid var(--border-main)",
+            background: isDark ? "#1f2937" : "#fff",
+            color: isDark ? "#fff" : "#111827",
+            border: isDark ? "1px solid #374151" : "1px solid #e5e7eb",
             fontSize: "13px",
           },
           iconTheme: { primary: "#ef4444", secondary: "#fff" },
@@ -202,11 +200,11 @@ export default function Leads() {
       {/* ── Page Header ────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-lg font-bold text-[var(--text-main)] flex items-center gap-2">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <Users size={20} className="text-blue-600" />
             Lead Pipeline
           </h2>
-          <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
             {stats.total} total leads · {stats.active} active · {stats.won} won
           </p>
         </div>
@@ -224,20 +222,21 @@ export default function Leads() {
       </div>
 
       {/* ── Toolbar: Search + Filters + View Toggle ────────────────────── */}
-      <div className="flex flex-col gap-4 bg-[var(--bg-surface)] p-4 border border-[var(--border-main)] rounded-xl shadow-sm">
+      <div className="flex flex-col gap-4 bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm">
         {/* Row 1: Search & View Toggle */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
           {/* View mode segmented control */}
-          <div className="flex bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg border border-[var(--border-main)] self-start sm:self-auto shrink-0 select-none">
+          {/* View mode segmented control (Tablet only - hybrid layout toggle) */}
+          <div className="hidden md:flex lg:hidden bg-gray-100 dark:bg-gray-900 p-0.5 rounded-lg border border-gray-200 dark:border-gray-700 self-start sm:self-auto shrink-0 select-none">
             <button
               type="button"
               onClick={() => setViewMode("cards")}
               className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
                 viewMode === "cards"
-                  ? "bg-[var(--bg-surface)] text-[var(--text-main)] shadow-xs"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-main)]"
+                  ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-xs"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}
               aria-pressed={viewMode === "cards"}
             >
@@ -249,8 +248,8 @@ export default function Leads() {
               onClick={() => setViewMode("table")}
               className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
                 viewMode === "table"
-                  ? "bg-[var(--bg-surface)] text-[var(--text-main)] shadow-xs"
-                  : "text-[var(--text-secondary)] hover:text-[var(--text-main)]"
+                  ? "bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-xs"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}
               aria-pressed={viewMode === "table"}
             >
@@ -261,7 +260,7 @@ export default function Leads() {
         </div>
 
         {/* Row 2: Status Filters */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1 border-t border-[var(--border-main)]/60">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1 border-t border-gray-200 dark:border-gray-700">
           <FilterBar
             activeFilter={activeFilter}
             onFilterChange={setActiveFilter}
@@ -282,7 +281,7 @@ export default function Leads() {
             )}
 
             {/* Result count */}
-            <span className="text-[10px] text-[var(--text-secondary)] tabular-nums">
+            <span className="text-[10px] text-gray-500 dark:text-gray-400 tabular-nums">
               Showing {stats.showing} of {stats.total}
             </span>
           </div>
@@ -296,31 +295,35 @@ export default function Leads() {
           onClearFilters={clearFilters}
           totalLeadsCount={leads.length}
         />
-      ) : viewMode === "cards" ? (
-        /* ── Card Grid View ─────────────────────────────────────────────── */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredLeads.map((lead) => (
-            <LeadCard
-              key={lead.id}
-              lead={lead}
+      ) : (
+        <>
+          {/* ── Card Grid View (Visible on mobile, on tablet if viewMode === "cards", hidden on desktop) ── */}
+          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 lg:hidden ${viewMode === "cards" ? "block" : "block md:hidden"}`}>
+            {filteredLeads.map((lead) => (
+              <LeadCard
+                key={lead.id}
+                lead={lead}
+                onEdit={openEditModal}
+                onDelete={handleDeleteLead}
+              />
+            ))}
+          </div>
+
+          {/* ── Table View (Hidden on mobile, on tablet if viewMode === "table", always visible on desktop) ── */}
+          <div className={viewMode === "table" ? "hidden md:block" : "hidden lg:block"}>
+            <LeadTable
+              leads={filteredLeads}
               onEdit={openEditModal}
               onDelete={handleDeleteLead}
             />
-          ))}
-        </div>
-      ) : (
-        /* ── Table View ─────────────────────────────────────────────────── */
-        <LeadTable
-          leads={filteredLeads}
-          onEdit={openEditModal}
-          onDelete={handleDeleteLead}
-        />
+          </div>
+        </>
       )}
 
-      {/* ── Modal Overlay for Create / Edit Lead ───────────────────────── */}
+      {/* ── Modal Overlay for Create / Edit Lead - Full screen on mobile, centered modal max-w-lg on tablet+ ── */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-0 md:p-4"
           role="dialog"
           aria-modal="true"
           aria-label={selectedLead ? `Edit ${selectedLead.name}` : "Add new lead"}
@@ -329,14 +332,14 @@ export default function Leads() {
             if (e.target === e.currentTarget) closeModal();
           }}
         >
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-main)] rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-white dark:bg-gray-800 border-none md:border md:border-gray-200 md:dark:border-gray-700 rounded-none md:rounded-2xl shadow-xl w-full h-full md:h-auto md:max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150 flex flex-col">
             {/* ── Modal Header ──────────────────────────────────────────── */}
-            <div className="px-6 py-4 border-b border-[var(--border-main)] flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between shrink-0 h-16">
               <div>
-                <h3 className="font-bold text-base text-[var(--text-main)]">
+                <h3 className="font-bold text-base text-gray-900 dark:text-white">
                   {selectedLead ? "Edit Lead" : "Create New Lead"}
                 </h3>
-                <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
                   {selectedLead
                     ? `Editing ${selectedLead.name}'s record`
                     : "Add a new prospect to your pipeline."}
@@ -346,14 +349,14 @@ export default function Leads() {
                 type="button"
                 onClick={closeModal}
                 aria-label="Close modal"
-                className="p-1.5 rounded-lg text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
                 <X size={16} />
               </button>
             </div>
 
             {/* ── Modal Body: LeadForm ──────────────────────────────────── */}
-            <div className="p-6">
+            <div className="p-6 flex-1 overflow-y-auto pb-24 md:pb-6">
               <LeadForm
                 initialData={selectedLead}
                 onSubmit={handleFormSubmit}

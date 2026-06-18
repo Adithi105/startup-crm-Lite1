@@ -34,19 +34,19 @@ export default function RecentLeads({ leads }) {
       case "Lost":
         return "bg-red-550 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400 border border-red-100 dark:border-red-900/20";
       default:
-        return "bg-slate-50 text-slate-700 dark:bg-slate-900/20 dark:text-slate-400 border border-slate-100 dark:border-slate-800";
+        return "bg-gray-50 text-gray-700 dark:bg-gray-900/20 dark:text-gray-400 border border-gray-100 dark:border-gray-800";
     }
   };
 
   return (
-    <div className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs overflow-hidden flex flex-col">
+    <div className="p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xs overflow-hidden flex flex-col">
       
       {/* Title */}
       <div className="mb-4 select-none">
-        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white">
           Recently Logged Leads
         </h3>
-        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+        <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
           Newly added prospects requiring immediate follow-ups
         </p>
       </div>
@@ -55,24 +55,24 @@ export default function RecentLeads({ leads }) {
       <div className="overflow-x-auto -mx-5 -mb-5">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="bg-slate-50 dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 font-semibold tracking-tight uppercase text-[9px] select-none">
+            <tr className="bg-gray-50 dark:bg-gray-900 border-y border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 font-semibold tracking-tight uppercase text-[9px] select-none">
               <th className="px-5 py-2.5">Lead Name</th>
               <th className="px-5 py-2.5">Company</th>
               <th className="px-5 py-2.5">Stage</th>
               <th className="px-5 py-2.5">Date Added</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-800/80">
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-700/80">
             {latestLeads.length > 0 ? (
               latestLeads.map((lead) => (
                 <tr 
                   key={lead.id} 
-                  className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors"
+                  className="hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors"
                 >
-                  <td className="px-5 py-3 font-semibold text-slate-800 dark:text-slate-200">
+                  <td className="px-5 py-3 font-semibold text-gray-900 dark:text-white">
                     {lead.name}
                   </td>
-                  <td className="px-5 py-3 text-slate-500 dark:text-slate-400">
+                  <td className="px-5 py-3 text-gray-500 dark:text-gray-400">
                     {lead.company}
                   </td>
                   <td className="px-5 py-3">
@@ -80,14 +80,14 @@ export default function RecentLeads({ leads }) {
                       {lead.status}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-slate-400 dark:text-slate-500 font-medium">
+                  <td className="px-5 py-3 text-gray-500 dark:text-gray-400 font-medium">
                     {lead.dateCreated}
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="px-5 py-8 text-center text-slate-400">
+                <td colSpan="4" className="px-5 py-8 text-center text-gray-500 dark:text-gray-400">
                   No prospects logged yet.
                 </td>
               </tr>

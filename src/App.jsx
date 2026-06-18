@@ -4,8 +4,6 @@ import {
   LayoutDashboard, 
   Users, 
   BarChart3, 
-  Sun, 
-  Moon, 
   Menu, 
   X, 
   Search, 
@@ -19,6 +17,16 @@ import { useLeads } from "./context/LeadContext";
 import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
 import Analytics from "./pages/Analytics";
+import ThemeToggle from "./components/common/ThemeToggle";
+
+
+
+// Navigation items with labels, sub-labels, and icons for responsive layout
+const navItems = [
+  { to: "/", label: "Dashboard", subLabel: "Metrics & Overview", icon: <LayoutDashboard size={18} /> },
+  { to: "/leads", label: "Leads Pipeline", subLabel: "Deal Management", icon: <Users size={18} /> },
+  { to: "/analytics", label: "Analytics", subLabel: "Performance Data", icon: <BarChart3 size={18} /> }
+];
 
 // Wrapper to get router context inside the App UI
 function AppShell() {
@@ -114,27 +122,90 @@ function AppShell() {
     : [];
 
   return (
-    <div className="min-h-screen flex text-[var(--text-main)] bg-[var(--bg-canvas)] theme-transition relative overflow-hidden">
+    <div className="min-h-screen flex text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-900 transition-colors duration-200 relative overflow-hidden pb-16 md:pb-0">
       
-      {/* 1. Backdrop for mobile drawer */}
-      {isMobileMenuOpen && (
+      {/* 1. Mobile Sidebar Slide-Over Drawer */}
+      <div 
+        className={`fixed inset-0 z-50 md:hidden transition-all duration-300 ${isMobileMenuOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+      >
+        {/* Backdrop overlay */}
         <div 
-          className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-sm md:hidden"
+          className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? "opacity-100" : "opacity-0"}`}
           onClick={() => setIsMobileMenuOpen(false)}
         />
-      )}
+        
+        {/* Drawer slide-out */}
+        <aside 
+          className={`absolute top-0 bottom-0 left-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-transform duration-300 ease-in-out z-50 ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
+        >
+          {/* Brand Area */}
+          <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700 select-none">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold shrink-0">
+                S
+              </div>
+              <div className="flex flex-col">
+                <span className="font-semibold text-sm tracking-tight leading-none">SalesFlow</span>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium mt-0.5">crm.v1.0</span>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-center p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors min-w-[44px] min-h-[44px]"
+              aria-label="Close menu"
+            >
+              <X size={18} />
+            </button>
+          </div>
+  
+          {/* Drawer Nav Items */}
+          <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={({ isActive }) => `
+                  flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-semibold transition-all duration-150 min-h-[44px]
+                  ${isActive 
+                    ? "bg-blue-600/10 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400" 
+                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/50 hover:text-gray-900 dark:hover:text-white"
+                  }
+                `}
+              >
+                <div className="shrink-0">{item.icon}</div>
+                <div className="flex flex-col min-w-0">
+                  <span className="truncate leading-tight">{item.label}</span>
+                  <span className="text-[9px] text-gray-450 dark:text-gray-500 font-normal leading-none mt-0.5 truncate">{item.subLabel}</span>
+                </div>
+              </NavLink>
+            ))}
+          </nav>
+  
+          {/* User profile section in Drawer */}
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-xs font-semibold uppercase shrink-0 text-gray-800 dark:text-gray-200">
+                AR
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold truncate">Alex Rivera</p>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">Acme Inc. (Admin)</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
 
-      {/* 2. Sidebar Navigation */}
+      {/* 2. Sidebar Navigation (Tablet & Desktop Only) */}
       <aside 
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col border-r border-[var(--border-main)] bg-[var(--bg-sidebar)] theme-transition 
-          md:sticky md:z-10
-          ${isSidebarCollapsed ? "w-16" : "w-64"}
-          ${isMobileMenuOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0"}
-          transition-all duration-300 ease-in-out
+        className={`hidden md:flex flex-col border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0 h-screen shrink-0 transition-all duration-300 ease-in-out
+          ${isSidebarCollapsed ? "md:w-16" : "md:w-52 lg:w-64"}
         `}
       >
         {/* Brand / Logo Area */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-[var(--border-main)]">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2 overflow-hidden">
             <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold shrink-0 shadow-sm shadow-blue-500/20">
               S
@@ -142,7 +213,7 @@ function AppShell() {
             {!isSidebarCollapsed && (
               <div className="flex flex-col select-none">
                 <span className="font-semibold text-sm tracking-tight leading-none">SalesFlow</span>
-                <span className="text-[10px] text-[var(--text-secondary)] font-medium mt-0.5">crm.v1.0</span>
+                <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium mt-0.5">crm.v1.0</span>
               </div>
             )}
           </div>
@@ -150,158 +221,167 @@ function AppShell() {
           {/* Collapse toggle (Desktop) */}
           <button 
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="hidden md:flex items-center justify-center p-1 rounded-md text-[var(--text-secondary)] hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+            className="hidden md:flex items-center justify-center p-1.5 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+            style={{ minWidth: "32px", minHeight: "32px" }}
           >
             {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-          </button>
-
-          {/* Close Menu (Mobile) */}
-          <button 
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="md:hidden flex items-center justify-center p-1.5 rounded-md text-[var(--text-secondary)] hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-          >
-            <X size={18} />
           </button>
         </div>
 
         {/* Navigation Items */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {[
-            { to: "/", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
-            { to: "/leads", label: "Leads Pipeline", icon: <Users size={18} /> },
-            { to: "/analytics", label: "Analytics", icon: <BarChart3 size={18} /> }
-          ].map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
-              onClick={() => setIsMobileMenuOpen(false)}
               className={({ isActive }) => `
-                flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150
+                flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
                 ${isActive 
                   ? "bg-blue-600/10 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400" 
-                  : "text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-[var(--text-main)]"
+                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/50 hover:text-gray-900 dark:hover:text-white"
                 }
               `}
               title={isSidebarCollapsed ? item.label : undefined}
             >
               <div className="shrink-0">{item.icon}</div>
-              {!isSidebarCollapsed && <span className="truncate">{item.label}</span>}
+              {!isSidebarCollapsed && (
+                <div className="flex flex-col min-w-0">
+                  <span className="truncate leading-tight">{item.label}</span>
+                  <span className="hidden lg:block text-[10px] text-gray-450 dark:text-gray-550 font-normal leading-none mt-0.5 truncate">{item.subLabel}</span>
+                </div>
+              )}
             </NavLink>
           ))}
         </nav>
 
         {/* User / Org profile bottom info */}
-        <div className="p-3 border-t border-[var(--border-main)] bg-slate-100/50 dark:bg-slate-900/30">
+        <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-slate-300 dark:bg-slate-700 flex items-center justify-center text-xs font-semibold uppercase shrink-0 text-slate-800 dark:text-slate-200">
+            <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-xs font-semibold uppercase shrink-0 text-gray-800 dark:text-gray-200">
               AR
             </div>
             {!isSidebarCollapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold truncate">Alex Rivera</p>
-                <p className="text-[10px] text-[var(--text-secondary)] truncate">Acme Inc. (Admin)</p>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">Acme Inc. (Admin)</p>
               </div>
             )}
           </div>
         </div>
       </aside>
 
-      {/* 3. Main Frame */}
+      {/* 3. Mobile Bottom Navigation Bar (icons only) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center z-40 px-4 pb-safe shadow-lg">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) => `
+              flex items-center justify-center p-3 rounded-xl transition-all duration-150 min-w-[44px] min-h-[44px]
+              ${isActive 
+                ? "bg-blue-600/10 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400" 
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              }
+            `}
+            title={item.label}
+          >
+            <div className="scale-110 shrink-0">{item.icon}</div>
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* 4. Main Frame */}
       <main className="flex-1 flex flex-col min-w-0 overflow-y-auto relative h-screen">
         
         {/* Topbar Header */}
-        <header className="h-16 shrink-0 border-b border-[var(--border-main)] bg-[var(--bg-surface)] px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 theme-transition">
-          
-          {/* Mobile menu and Title */}
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-1.5 rounded-lg text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            >
-              <Menu size={20} />
-            </button>
-            <h1 className="text-base md:text-lg font-bold tracking-tight select-none">
-              {getPageTitle()}
-            </h1>
-          </div>
-
-          {/* Search, Action, Settings */}
-          <div className="flex items-center gap-3 md:gap-4">
-            
-            {/* Global Search Inputs (Notion Style) */}
-            <div className="relative hidden sm:block w-48 lg:w-64">
-              <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-[var(--text-secondary)]">
-                <Search size={14} />
-              </div>
-              <input
-                id="global-search"
-                type="text"
-                placeholder="Search leads..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
-                className="w-full pl-8 pr-8 py-1.5 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 theme-transition"
-              />
-              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-mono font-medium rounded border border-[var(--border-main)] bg-white dark:bg-slate-800 text-[var(--text-secondary)] shadow-sm">
-                  <Command size={8} /> /
-                </kbd>
-              </div>
-
-              {/* Instant Search Dropdown results */}
-              {isSearchFocused && searchQuery && (
-                <div className="absolute top-full right-0 left-0 mt-1 bg-[var(--bg-surface)] border border-[var(--border-main)] rounded-lg shadow-lg max-h-60 overflow-y-auto z-50 p-1 flex flex-col gap-0.5 min-w-[240px]">
-                  <div className="text-[10px] text-[var(--text-secondary)] font-semibold px-2 py-1 select-none">
-                    Matching Leads ({filteredSearchLeads.length})
-                  </div>
-                  {filteredSearchLeads.length > 0 ? (
-                    filteredSearchLeads.map(lead => (
-                      <NavLink
-                        key={lead.id}
-                        to={`/leads?id=${lead.id}`}
-                        className="flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-left text-xs transition-colors"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="font-semibold truncate">{lead.name}</p>
-                          <p className="text-[10px] text-[var(--text-secondary)] truncate">{lead.company}</p>
-                        </div>
-                        <span className="text-[10px] bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded-full font-medium shrink-0 ml-2">
-                          ${lead.value.toLocaleString()}
-                        </span>
-                      </NavLink>
-                    ))
-                  ) : (
-                    <div className="text-xs text-[var(--text-secondary)] px-2 py-3 text-center">
-                      No results for "{searchQuery}"
-                    </div>
-                  )}
-                </div>
-              )}
+        <header className="h-16 shrink-0 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0 z-30 transition-colors duration-200">
+          <div className="fluid-container h-full flex items-center justify-between">
+            {/* Mobile menu and Title */}
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="md:hidden p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer"
+                aria-label="Open navigation menu"
+              >
+                <Menu size={20} />
+              </button>
+              <h1 className="text-base md:text-lg font-bold tracking-tight select-none">
+                {getPageTitle()}
+              </h1>
             </div>
 
-            {/* Dark Mode toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-1.5 md:p-2 rounded-lg border border-[var(--border-main)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shadow-sm"
-              title="Toggle theme mode"
-            >
-              {isDarkMode ? <Sun size={15} /> : <Moon size={15} />}
-            </button>
+            {/* Search, Action, Settings */}
+            <div className="flex items-center gap-3 md:gap-4">
+              
+              {/* Global Search Inputs (Notion Style) */}
+              <div className="relative hidden sm:block w-48 lg:w-64">
+                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-gray-500 dark:text-gray-400">
+                  <Search size={14} />
+                </div>
+                <input
+                  id="global-search"
+                  type="text"
+                  placeholder="Search leads..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                  className="w-full pl-8 pr-8 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200"
+                />
+                <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                  <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[9px] font-mono font-medium rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 shadow-sm">
+                    <Command size={8} /> /
+                  </kbd>
+                </div>
 
-            {/* Quick Add Lead Button */}
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 md:py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-sm shadow-blue-500/10 cursor-pointer active:scale-95 transition-all"
-            >
-              <Plus size={14} />
-              <span className="hidden sm:inline">Add Lead</span>
-            </button>
+                {/* Instant Search Dropdown results */}
+                {isSearchFocused && searchQuery && (
+                  <div className="absolute top-full right-0 left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50 p-1 flex flex-col gap-0.5 min-w-[240px]">
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold px-2 py-1 select-none">
+                      Matching Leads ({filteredSearchLeads.length})
+                    </div>
+                    {filteredSearchLeads.length > 0 ? (
+                      filteredSearchLeads.map(lead => (
+                        <NavLink
+                          key={lead.id}
+                          to={`/leads?id=${lead.id}`}
+                          className="flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-left text-xs transition-colors"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold truncate">{lead.name}</p>
+                            <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{lead.company}</p>
+                          </div>
+                          <span className="text-[10px] bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded-full font-medium shrink-0 ml-2">
+                            ${lead.value.toLocaleString()}
+                          </span>
+                        </NavLink>
+                      ))
+                    ) : (
+                      <div className="text-xs text-gray-500 dark:text-gray-400 px-2 py-3 text-center">
+                         No results for "{searchQuery}"
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Dark Mode toggle */}
+              <ThemeToggle />
+
+              {/* Quick Add Lead Button */}
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-2 md:py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs shadow-sm shadow-blue-500/10 cursor-pointer active:scale-95 transition-all min-h-[44px] min-w-[44px]"
+              >
+                <Plus size={14} />
+                <span className="hidden sm:inline">Add Lead</span>
+              </button>
+            </div>
           </div>
         </header>
 
-        {/* 4. Page Routing Content Area */}
-        <div className="flex-1 p-4 md:p-6 space-y-6 max-w-7xl mx-full w-full">
+        {/* 5. Page Routing Content Area */}
+        <div className="flex-1 fluid-container py-4 pb-24 md:py-6 space-y-6">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/leads" element={<Leads />} />
@@ -310,84 +390,85 @@ function AppShell() {
         </div>
       </main>
 
-      {/* Global Slide Modal for creating lead */}
+      {/* Global Slide Modal for creating lead - Full screen on mobile, centered modal max-w-lg on tablet+ */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-          <div className="bg-[var(--bg-surface)] border border-[var(--border-main)] rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-0 md:p-4">
+          <div className="bg-white dark:bg-gray-800 border-none md:border md:border-gray-200 md:dark:border-gray-700 rounded-none md:rounded-2xl shadow-xl w-full h-full md:h-auto md:max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150 flex flex-col">
             
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-[var(--border-main)] flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between shrink-0 h-16">
               <div>
-                <h3 className="font-bold text-base">Create New Lead</h3>
-                <p className="text-[11px] text-[var(--text-secondary)]">Input lead contact and deal parameters.</p>
+                <h3 className="font-bold text-base text-gray-900 dark:text-white">Create New Lead</h3>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">Input lead contact and deal parameters.</p>
               </div>
               <button 
                 onClick={() => setIsAddModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-slate-150 text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-3 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center min-w-[44px] min-h-[44px] cursor-pointer"
+                aria-label="Close modal"
               >
                 <X size={16} />
               </button>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleCreateLead} className="p-6 space-y-4">
+            <form onSubmit={handleCreateLead} className="p-6 space-y-4 flex-1 overflow-y-auto pb-24 md:pb-6">
               <div className="grid grid-cols-2 gap-4">
                 
                 {/* Lead Name */}
                 <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Lead Name *</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Lead Name *</label>
                   <input
                     type="text"
                     required
                     value={newLeadForm.name}
                     onChange={(e) => setNewLeadForm(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="e.g. John Doe"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                    className="w-full px-3 py-3 md:py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200 min-h-[44px] md:min-h-0"
                   />
                 </div>
 
                 {/* Company */}
                 <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Company *</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Company *</label>
                   <input
                     type="text"
                     required
                     value={newLeadForm.company}
                     onChange={(e) => setNewLeadForm(prev => ({ ...prev, company: e.target.value }))}
                     placeholder="e.g. Acme Corp"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                    className="w-full px-3 py-3 md:py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200 min-h-[44px] md:min-h-0"
                   />
                 </div>
 
                 {/* Email */}
                 <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Email</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Email</label>
                   <input
                     type="email"
                     value={newLeadForm.email}
                     onChange={(e) => setNewLeadForm(prev => ({ ...prev, email: e.target.value }))}
                     placeholder="john@company.com"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                    className="w-full px-3 py-3 md:py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200 min-h-[44px] md:min-h-0"
                   />
                 </div>
 
                 {/* Role */}
                 <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Job Title</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Job Title</label>
                   <input
                     type="text"
                     value={newLeadForm.role}
                     onChange={(e) => setNewLeadForm(prev => ({ ...prev, role: e.target.value }))}
                     placeholder="e.g. Product Manager"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                    className="w-full px-3 py-3 md:py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200 min-h-[44px] md:min-h-0"
                   />
                 </div>
 
                 {/* Deal Value */}
                 <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Deal Value ($)</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Deal Value ($)</label>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 text-xs">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 text-xs">
                       $
                     </div>
                     <input
@@ -395,18 +476,18 @@ function AppShell() {
                       value={newLeadForm.value}
                       onChange={(e) => setNewLeadForm(prev => ({ ...prev, value: e.target.value }))}
                       placeholder="5000"
-                      className="w-full pl-7 pr-3 py-2 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                      className="w-full pl-7 pr-3 py-3 md:py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200 min-h-[44px] md:min-h-0"
                     />
                   </div>
                 </div>
 
                 {/* Lead Source */}
                 <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Lead Source</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Lead Source</label>
                   <select
                     value={newLeadForm.source}
                     onChange={(e) => setNewLeadForm(prev => ({ ...prev, source: e.target.value }))}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 text-[var(--text-main)]"
+                    className="w-full px-3 py-3 md:py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-950 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200 min-h-[44px] md:min-h-0 text-xs"
                   >
                     <option value="Inbound">Inbound</option>
                     <option value="Outbound">Outbound</option>
@@ -417,11 +498,11 @@ function AppShell() {
 
                 {/* Status / Stage */}
                 <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Stage</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Stage</label>
                   <select
                     value={newLeadForm.status}
                     onChange={(e) => setNewLeadForm(prev => ({ ...prev, status: e.target.value }))}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 text-[var(--text-main)]"
+                    className="w-full px-3 py-3 md:py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-950 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200 min-h-[44px] md:min-h-0 text-xs"
                   >
                     <option value="New">New</option>
                     <option value="Contacted">Contacted</option>
@@ -434,11 +515,11 @@ function AppShell() {
 
                 {/* Priority */}
                 <div className="col-span-2 sm:col-span-1 flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Priority</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Priority</label>
                   <select
                     value={newLeadForm.priority}
                     onChange={(e) => setNewLeadForm(prev => ({ ...prev, priority: e.target.value }))}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 text-[var(--text-main)]"
+                    className="w-full px-3 py-3 md:py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-950 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200 min-h-[44px] md:min-h-0 text-xs"
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -448,30 +529,30 @@ function AppShell() {
 
                 {/* Notes/Description */}
                 <div className="col-span-2 flex flex-col gap-1.5">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Description / Notes</label>
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400">Description / Notes</label>
                   <textarea
                     rows="3"
                     value={newLeadForm.description}
                     onChange={(e) => setNewLeadForm(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Enter preliminary details or comments..."
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
+                    className="w-full px-3 py-3 md:py-2 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200"
                   ></textarea>
                 </div>
 
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-end gap-2 pt-2 border-t border-[var(--border-main)]">
+              <div className="flex justify-end gap-2.5 pt-4 pb-12 md:pb-0 border-t border-gray-200 dark:border-gray-700 mt-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 text-xs font-medium border border-[var(--border-main)] hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                  className="px-4 py-3 md:py-2.5 text-xs font-semibold border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm shadow-blue-500/10 cursor-pointer"
+                  className="px-5 py-3 md:py-2.5 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm shadow-blue-500/10 cursor-pointer min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 flex items-center justify-center"
                 >
                   Save Lead
                 </button>
