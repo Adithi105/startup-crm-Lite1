@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, NavLink, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -12,24 +12,17 @@ import {
   Plus, 
   ChevronLeft, 
   ChevronRight, 
-  Command, 
-  Building,
-  DollarSign,
-  TrendingUp,
-  User,
-  Settings,
-  HelpCircle,
-  FolderLock
+  Command
 } from "lucide-react";
-import { ThemeProvider, useTheme } from "./context/ThemeContext";
-import { LeadsProvider, useLeads } from "./context/LeadsContext";
+import { useTheme } from "./context/ThemeContext";
+import { useLeads } from "./context/LeadContext";
 import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
 import Analytics from "./pages/Analytics";
 
 // Wrapper to get router context inside the App UI
 function AppShell() {
-  const { theme, toggleTheme } = useTheme();
+  const { isDarkMode, toggleTheme } = useTheme();
   const { leads, addLead } = useLeads();
   const location = useLocation();
   
@@ -293,7 +286,7 @@ function AppShell() {
               className="p-1.5 md:p-2 rounded-lg border border-[var(--border-main)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shadow-sm"
               title="Toggle theme mode"
             >
-              {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+              {isDarkMode ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
             {/* Quick Add Lead Button */}
@@ -494,11 +487,7 @@ function AppShell() {
 function App() {
   return (
     <Router>
-      <ThemeProvider>
-        <LeadsProvider>
-          <AppShell />
-        </LeadsProvider>
-      </ThemeProvider>
+      <AppShell />
     </Router>
   );
 }

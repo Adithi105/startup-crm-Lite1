@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { 
   BarChart, 
   Bar, 
@@ -8,21 +8,16 @@ import {
   YAxis, 
   Tooltip, 
   ResponsiveContainer, 
-  Legend, 
-  PieChart, 
-  Pie, 
-  Cell 
+  Legend 
 } from "recharts";
-import { useLeads } from "../context/LeadsContext";
+import { useLeads } from "../context/LeadContext";
 import { 
   TrendingUp, 
   Award, 
   Target, 
   Percent, 
   Filter, 
-  Calendar,
-  Sparkles,
-  ArrowRight
+  Calendar
 } from "lucide-react";
 
 // Tooltip Component
@@ -99,7 +94,7 @@ export default function Analytics() {
     // Accumulate for line area chart representation (Cumulative)
     let accum = 0;
     return Object.entries(months)
-      .map(([key, data]) => {
+      .map(([, data]) => {
         accum += data.revenue;
         return {
           month: data.name,

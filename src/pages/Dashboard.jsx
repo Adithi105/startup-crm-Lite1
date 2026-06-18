@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { useLeads } from "../context/LeadsContext";
+import { useState, useMemo } from "react";
+import { useLeads } from "../context/LeadContext";
 import StatsCard from "../components/dashboard/StatsCard";
 import PipelineOverview from "../components/dashboard/PipelineOverview";
 import RecentLeads from "../components/dashboard/RecentLeads";
@@ -9,7 +9,6 @@ import {
   Briefcase, 
   DollarSign, 
   TrendingUp, 
-  Plus, 
   X 
 } from "lucide-react";
 

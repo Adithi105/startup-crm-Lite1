@@ -1,19 +1,20 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import {
-  Search,
   LayoutGrid,
   List,
   Plus,
   X,
   Users,
-  Filter,
   RotateCcw,
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-import { useLeads } from "../context/LeadsContext";
-import LeadForm, { STATUS_OPTIONS, SOURCE_OPTIONS } from "../components/leads/LeadForm";
+import { useLeads } from "../context/LeadContext";
+import LeadForm from "../components/leads/LeadForm";
 import LeadCard from "../components/leads/LeadCard";
 import LeadTable from "../components/leads/LeadTable";
+import SearchBar from "../components/common/SearchBar";
+import FilterBar from "../components/common/FilterBar";
+import EmptyState from "../components/common/EmptyState";
 
 // ─── Leads Page ─────────────────────────────────────────────────────────────
 // Main leads directory page: assembles LeadCard grid, LeadTable, LeadForm
@@ -29,51 +30,28 @@ import LeadTable from "../components/leads/LeadTable";
 //   sourceFilter     – filter by acquisition source
 
 export default function Leads() {
-  const { leads, addLead, updateLeadDetails, deleteLead } = useLeads();
+  const { leads, addLead, updateLead, deleteLead } = useLeads();
 
   // ── View & Filter State ─────────────────────────────────────────────────
   const [viewMode, setViewMode] = useState("cards");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [sourceFilter, setSourceFilter] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("All");
 
   // ── Modal State ─────────────────────────────────────────────────────────
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState(null);
 
-  // ── Keyboard shortcut: Escape closes modal ──────────────────────────────
-  useEffect(() => {
-    const handleKey = (e) => {
-      if (e.key === "Escape" && isModalOpen) {
-        closeModal();
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [isModalOpen]);
-
   // ── Filter leads ────────────────────────────────────────────────────────
   const filteredLeads = useMemo(() => {
-    return leads.filter((lead) => {
-      // Text search across name, company, and email
-      const term = searchTerm.toLowerCase();
-      const matchesSearch =
-        !term ||
-        lead.name.toLowerCase().includes(term) ||
-        lead.company.toLowerCase().includes(term) ||
-        (lead.email && lead.email.toLowerCase().includes(term));
-
-      // Status dropdown filter
-      const matchesStatus =
-        statusFilter === "All" || lead.status === statusFilter;
-
-      // Source dropdown filter
-      const matchesSource =
-        sourceFilter === "All" || lead.source === sourceFilter;
-
-      return matchesSearch && matchesStatus && matchesSource;
-    });
-  }, [leads, searchTerm, statusFilter, sourceFilter]);
+    return leads
+      .filter((lead) => activeFilter === "All" || lead.status === activeFilter)
+      .filter(
+        (lead) =>
+          lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          lead.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (lead.email || "").toLowerCase().includes(searchQuery.toLowerCase())
+      );
+  }, [leads, searchQuery, activeFilter]);
 
   // ── Quick Stats ─────────────────────────────────────────────────────────
   const stats = useMemo(() => {
@@ -85,8 +63,7 @@ export default function Leads() {
     };
   }, [leads, filteredLeads]);
 
-  const hasActiveFilters =
-    searchTerm || statusFilter !== "All" || sourceFilter !== "All";
+  const hasActiveFilters = searchQuery !== "" || activeFilter !== "All";
 
   // ── Modal Controls ──────────────────────────────────────────────────────
 
@@ -108,6 +85,17 @@ export default function Leads() {
     setSelectedLead(null);
   }, []);
 
+  // ── Keyboard shortcut: Escape closes modal ──────────────────────────────
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "Escape" && isModalOpen) {
+        closeModal();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [isModalOpen, closeModal]);
+
   // ── CRUD Handlers ───────────────────────────────────────────────────────
 
   /**
@@ -118,7 +106,7 @@ export default function Leads() {
     (formData) => {
       if (selectedLead) {
         // ── UPDATE existing lead ──────────────────────────────────────────
-        updateLeadDetails(selectedLead.id, {
+        updateLead(selectedLead.id, {
           name:    formData.name,
           company: formData.company,
           email:   formData.email,
@@ -166,7 +154,7 @@ export default function Leads() {
       }
       closeModal();
     },
-    [selectedLead, addLead, updateLeadDetails, closeModal]
+    [selectedLead, addLead, updateLead, closeModal]
   );
 
   /**
@@ -198,9 +186,8 @@ export default function Leads() {
 
   /** Clear all active filters */
   const clearFilters = () => {
-    setSearchTerm("");
-    setStatusFilter("All");
-    setSourceFilter("All");
+    setSearchQuery("");
+    setActiveFilter("All");
   };
 
   // ── Render ──────────────────────────────────────────────────────────────
@@ -237,23 +224,10 @@ export default function Leads() {
       </div>
 
       {/* ── Toolbar: Search + Filters + View Toggle ────────────────────── */}
-      <div className="flex flex-col gap-3 bg-[var(--bg-surface)] p-3 border border-[var(--border-main)] rounded-xl shadow-sm">
+      <div className="flex flex-col gap-4 bg-[var(--bg-surface)] p-4 border border-[var(--border-main)] rounded-xl shadow-sm">
         {/* Row 1: Search & View Toggle */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          {/* Search Input */}
-          <div className="relative flex-1 max-w-sm">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[var(--text-secondary)]">
-              <Search size={14} />
-            </div>
-            <input
-              id="lead-search"
-              type="text"
-              placeholder="Search by name, company, email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-[var(--border-main)] bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
-            />
-          </div>
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
 
           {/* View mode segmented control */}
           <div className="flex bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg border border-[var(--border-main)] self-start sm:self-auto shrink-0 select-none">
@@ -286,91 +260,53 @@ export default function Leads() {
           </div>
         </div>
 
-        {/* Row 2: Dropdown Filters */}
-        <div className="flex flex-wrap items-center gap-2.5 text-xs">
-          <span className="flex items-center gap-1 font-semibold text-[var(--text-secondary)]">
-            <Filter size={12} />
-            Filters:
-          </span>
+        {/* Row 2: Status Filters */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1 border-t border-[var(--border-main)]/60">
+          <FilterBar
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+            leads={leads}
+          />
 
-          {/* Status Filter */}
-          <select
-            id="status-filter"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-2.5 py-1.5 rounded-md border border-[var(--border-main)] bg-[var(--bg-surface)] text-[var(--text-main)] text-xs"
-            aria-label="Filter by status"
-          >
-            <option value="All">All Statuses</option>
-            {STATUS_OPTIONS.map((st) => (
-              <option key={st} value={st}>
-                {st}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center justify-between lg:justify-end gap-4 text-xs shrink-0">
+            {/* Clear filters button */}
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold hover:underline cursor-pointer"
+              >
+                <RotateCcw size={11} />
+                Clear filters
+              </button>
+            )}
 
-          {/* Source Filter */}
-          <select
-            id="source-filter"
-            value={sourceFilter}
-            onChange={(e) => setSourceFilter(e.target.value)}
-            className="px-2.5 py-1.5 rounded-md border border-[var(--border-main)] bg-[var(--bg-surface)] text-[var(--text-main)] text-xs"
-            aria-label="Filter by source"
-          >
-            <option value="All">All Sources</option>
-            {SOURCE_OPTIONS.map((src) => (
-              <option key={src} value={src}>
-                {src}
-              </option>
-            ))}
-          </select>
-
-          {/* Clear filters button */}
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold hover:underline ml-auto cursor-pointer"
-            >
-              <RotateCcw size={11} />
-              Clear filters
-            </button>
-          )}
-
-          {/* Result count */}
-          <span className="text-[10px] text-[var(--text-secondary)] ml-auto tabular-nums">
-            Showing {stats.showing} of {stats.total}
-          </span>
+            {/* Result count */}
+            <span className="text-[10px] text-[var(--text-secondary)] tabular-nums">
+              Showing {stats.showing} of {stats.total}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* ── Main Content: Cards Grid or Table ──────────────────────────── */}
-      {viewMode === "cards" ? (
+      {filteredLeads.length === 0 ? (
+        <EmptyState
+          isFilterActive={hasActiveFilters}
+          onClearFilters={clearFilters}
+          totalLeadsCount={leads.length}
+        />
+      ) : viewMode === "cards" ? (
         /* ── Card Grid View ─────────────────────────────────────────────── */
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredLeads.length > 0 ? (
-            filteredLeads.map((lead) => (
-              <LeadCard
-                key={lead.id}
-                lead={lead}
-                onEdit={openEditModal}
-                onDelete={handleDeleteLead}
-              />
-            ))
-          ) : (
-            /* Empty state for cards */
-            <div className="col-span-full flex flex-col items-center justify-center py-16 text-[var(--text-secondary)]">
-              <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3">
-                <Users size={20} className="text-slate-400" />
-              </div>
-              <p className="text-sm font-semibold">No leads found</p>
-              <p className="text-[10px] mt-1">
-                {hasActiveFilters
-                  ? "Try adjusting your filters."
-                  : "Click \"Add Lead\" to get started."}
-              </p>
-            </div>
-          )}
+          {filteredLeads.map((lead) => (
+            <LeadCard
+              key={lead.id}
+              lead={lead}
+              onEdit={openEditModal}
+              onDelete={handleDeleteLead}
+            />
+          ))}
         </div>
       ) : (
         /* ── Table View ─────────────────────────────────────────────────── */
