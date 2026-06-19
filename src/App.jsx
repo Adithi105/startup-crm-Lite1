@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, NavLink, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Users, 
@@ -30,9 +30,9 @@ const navItems = [
 
 // Wrapper to get router context inside the App UI
 function AppShell() {
-  const { isDarkMode, toggleTheme } = useTheme();
   const { leads, addLead } = useLeads();
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Navigation layout state
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -42,6 +42,30 @@ function AppShell() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const handleSearchKeyDown = (e) => {
+    if (!isSearchFocused || filteredSearchLeads.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev + 1) % filteredSearchLeads.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev - 1 + filteredSearchLeads.length) % filteredSearchLeads.length);
+    } else if (e.key === "Enter") {
+      if (activeIndex >= 0 && activeIndex < filteredSearchLeads.length) {
+        e.preventDefault();
+        const selectedLead = filteredSearchLeads[activeIndex];
+        navigate(`/leads?id=${selectedLead.id}`);
+        setSearchQuery("");
+        setIsSearchFocused(false);
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setIsSearchFocused(false);
+      document.getElementById("global-search")?.blur();
+    }
+  };
   
   // Add Lead Form State
   const [newLeadForm, setNewLeadForm] = useState({
@@ -323,9 +347,13 @@ function AppShell() {
                   type="text"
                   placeholder="Search leads..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setActiveIndex(-1);
+                  }}
                   onFocus={() => setIsSearchFocused(true)}
-                  onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  onKeyDown={handleSearchKeyDown}
                   className="w-full pl-8 pr-8 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 transition-colors duration-200"
                 />
                 <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
@@ -336,26 +364,41 @@ function AppShell() {
 
                 {/* Instant Search Dropdown results */}
                 {isSearchFocused && searchQuery && (
-                  <div className="absolute top-full right-0 left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50 p-1 flex flex-col gap-0.5 min-w-[240px]">
+                  <div 
+                    className="absolute top-full right-0 left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50 p-1 flex flex-col gap-0.5 min-w-[240px]"
+                    onMouseDown={(e) => e.preventDefault()}
+                  >
                     <div className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold px-2 py-1 select-none">
                       Matching Leads ({filteredSearchLeads.length})
                     </div>
                     {filteredSearchLeads.length > 0 ? (
-                      filteredSearchLeads.map(lead => (
-                        <NavLink
-                          key={lead.id}
-                          to={`/leads?id=${lead.id}`}
-                          className="flex items-center justify-between px-2.5 py-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-left text-xs transition-colors"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <p className="font-semibold truncate">{lead.name}</p>
-                            <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{lead.company}</p>
-                          </div>
-                          <span className="text-[10px] bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded-full font-medium shrink-0 ml-2">
-                            ${lead.value.toLocaleString()}
-                          </span>
-                        </NavLink>
-                      ))
+                      filteredSearchLeads.map((lead, index) => {
+                        const isActive = index === activeIndex;
+                        return (
+                          <NavLink
+                            key={lead.id}
+                            to={`/leads?id=${lead.id}`}
+                            onClick={() => {
+                              setSearchQuery("");
+                              setIsSearchFocused(false);
+                            }}
+                            onMouseEnter={() => setActiveIndex(index)}
+                            className={`flex items-center justify-between px-2.5 py-1.5 rounded-md text-left text-xs transition-colors ${
+                              isActive
+                                ? "bg-gray-100 dark:bg-gray-700 text-blue-600 dark:text-blue-400"
+                                : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                            }`}
+                          >
+                            <div className="min-w-0 flex-1">
+                              <p className="font-semibold truncate">{lead.name}</p>
+                              <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{lead.company}</p>
+                            </div>
+                            <span className="text-[10px] bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 px-1.5 py-0.5 rounded-full font-medium shrink-0 ml-2">
+                              ${lead.value.toLocaleString()}
+                            </span>
+                          </NavLink>
+                        );
+                      })
                     ) : (
                       <div className="text-xs text-gray-500 dark:text-gray-400 px-2 py-3 text-center">
                          No results for "{searchQuery}"

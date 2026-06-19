@@ -63,6 +63,7 @@ export default function LeadCard({ lead, onEdit, onDelete }) {
 
   return (
     <article
+      id={`lead-card-${lead.id}`}
       className="premium-card premium-card-hover bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-xl group flex flex-col gap-4 p-4 relative overflow-hidden"
       aria-label={`Lead card for ${lead.name}`}
     >

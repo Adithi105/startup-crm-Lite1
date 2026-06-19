@@ -37,6 +37,7 @@ export default function LeadTable({ leads, onEdit, onDelete }) {
               leads.map((lead) => (
                 <tr
                   key={lead.id}
+                  id={`lead-row-${lead.id}`}
                   className="group hover:bg-gray-50/70 dark:hover:bg-gray-700/40 transition-colors"
                 >
                   {/* Name */}

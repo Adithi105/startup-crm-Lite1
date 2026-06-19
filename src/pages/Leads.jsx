@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   LayoutGrid,
   List,
@@ -31,6 +32,8 @@ import EmptyState from "../components/common/EmptyState";
 
 export default function Leads() {
   const { leads, addLead, updateLead, deleteLead } = useLeads();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const leadIdParam = searchParams.get("id");
 
   // ── View & Filter State ─────────────────────────────────────────────────
   const [viewMode, setViewMode] = useState("cards");
@@ -40,6 +43,33 @@ export default function Leads() {
   // ── Modal State ─────────────────────────────────────────────────────────
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState(null);
+
+  // ── Derived State from URL lead ID parameter ────────────────────────────
+  const leadFromParam = useMemo(() => {
+    return leadIdParam ? leads.find((l) => l.id === leadIdParam) : null;
+  }, [leadIdParam, leads]);
+
+  const displayLead = selectedLead || leadFromParam;
+  const showModal = isModalOpen || Boolean(leadFromParam);
+
+  // ── Effect: Scroll and highlight lead on parameter match ────────────────
+  useEffect(() => {
+    if (leadIdParam) {
+      setTimeout(() => {
+        const cardEl = document.getElementById(`lead-card-${leadIdParam}`);
+        const rowEl = document.getElementById(`lead-row-${leadIdParam}`);
+        [cardEl, rowEl].forEach((targetEl) => {
+          if (targetEl && targetEl.offsetParent !== null) {
+            targetEl.scrollIntoView({ behavior: "smooth", block: "center" });
+            targetEl.classList.add("ring-2", "ring-blue-500", "ring-offset-2", "dark:ring-offset-gray-900");
+            setTimeout(() => {
+              targetEl.classList.remove("ring-2", "ring-blue-500", "ring-offset-2", "dark:ring-offset-gray-900");
+            }, 3000);
+          }
+        });
+      }, 100);
+    }
+  }, [leadIdParam]);
 
   // ── Filter leads ────────────────────────────────────────────────────────
   const filteredLeads = useMemo(() => {
@@ -83,18 +113,23 @@ export default function Leads() {
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedLead(null);
-  }, []);
+    if (searchParams.has("id")) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("id");
+      setSearchParams(newParams);
+    }
+  }, [searchParams, setSearchParams]);
 
   // ── Keyboard shortcut: Escape closes modal ──────────────────────────────
   useEffect(() => {
     const handleKey = (e) => {
-      if (e.key === "Escape" && isModalOpen) {
+      if (e.key === "Escape" && showModal) {
         closeModal();
       }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [isModalOpen, closeModal]);
+  }, [showModal, closeModal]);
 
   // ── CRUD Handlers ───────────────────────────────────────────────────────
 
@@ -113,9 +148,9 @@ export default function Leads() {
         fontSize: "13px",
       };
 
-      if (selectedLead) {
+      if (displayLead) {
         // ── UPDATE existing lead ──────────────────────────────────────────
-        updateLead(selectedLead.id, {
+        updateLead(displayLead.id, {
           name:    formData.name,
           company: formData.company,
           email:   formData.email,
@@ -151,7 +186,7 @@ export default function Leads() {
       }
       closeModal();
     },
-    [selectedLead, addLead, updateLead, closeModal]
+    [displayLead, addLead, updateLead, closeModal]
   );
 
   /**
@@ -321,12 +356,12 @@ export default function Leads() {
       )}
 
       {/* ── Modal Overlay for Create / Edit Lead - Full screen on mobile, centered modal max-w-lg on tablet+ ── */}
-      {isModalOpen && (
+      {showModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-0 md:p-4"
           role="dialog"
           aria-modal="true"
-          aria-label={selectedLead ? `Edit ${selectedLead.name}` : "Add new lead"}
+          aria-label={displayLead ? `Edit ${displayLead.name}` : "Add new lead"}
           onClick={(e) => {
             // Close on backdrop click (not on modal content click)
             if (e.target === e.currentTarget) closeModal();
@@ -337,11 +372,11 @@ export default function Leads() {
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between shrink-0 h-16">
               <div>
                 <h3 className="font-bold text-base text-gray-900 dark:text-white">
-                  {selectedLead ? "Edit Lead" : "Create New Lead"}
+                  {displayLead ? "Edit Lead" : "Create New Lead"}
                 </h3>
                 <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-                  {selectedLead
-                    ? `Editing ${selectedLead.name}'s record`
+                  {displayLead
+                    ? `Editing ${displayLead.name}'s record`
                     : "Add a new prospect to your pipeline."}
                 </p>
               </div>
@@ -358,7 +393,7 @@ export default function Leads() {
             {/* ── Modal Body: LeadForm ──────────────────────────────────── */}
             <div className="p-6 flex-1 overflow-y-auto pb-24 md:pb-6">
               <LeadForm
-                initialData={selectedLead}
+                initialData={displayLead}
                 onSubmit={handleFormSubmit}
                 onCancel={closeModal}
               />
