@@ -37,14 +37,14 @@ const INITIAL_LEADS = [
     status: "Qualified",
     priority: "High",
     source: "Referral",
-    owner: "Alex Rivera",
+    owner: "C Adithi",
     dateCreated: "2026-05-10",
     lastActive: "2026-06-15",
     description: "Looking to replace their legacy client management systems. Expressed high interest in our API capabilities.",
     timeline: [
-      { id: "t-1", date: "2026-05-10", type: "creation", user: "Alex Rivera", content: "Lead created via Referral link." },
-      { id: "t-2", date: "2026-05-12", type: "email", user: "Alex Rivera", content: "Sent follow-up proposal with technical document." },
-      { id: "t-3", date: "2026-06-15", type: "meeting", user: "Alex Rivera", content: "Product demo call completed successfully. Moved stage from Contacted to Qualified." }
+      { id: "t-1", date: "2026-05-10", type: "creation", user: "C Adithi", content: "Lead created via Referral link." },
+      { id: "t-2", date: "2026-05-12", type: "email", user: "C Adithi", content: "Sent follow-up proposal with technical document." },
+      { id: "t-3", date: "2026-06-15", type: "meeting", user: "C Adithi", content: "Product demo call completed successfully. Moved stage from Contacted to Qualified." }
     ]
   },
   {
@@ -79,7 +79,7 @@ const INITIAL_LEADS = [
     status: "Won",
     priority: "Medium",
     source: "Other",
-    owner: "Alex Rivera",
+    owner: "C Adithi",
     dateCreated: "2026-05-01",
     lastActive: "2026-06-12",
     description: "Self-serve organic lead. Upgrade completed to annual Scale Plan.",
@@ -158,13 +158,13 @@ const INITIAL_LEADS = [
     status: "Proposal Sent",
     priority: "High",
     source: "Cold Call",
-    owner: "Alex Rivera",
+    owner: "C Adithi",
     dateCreated: "2026-04-05",
     lastActive: "2026-06-14",
     description: "Venture firm seeking custom portal access for portfolio tracking. High ticket size.",
     timeline: [
       { id: "t-14", date: "2026-04-05", type: "creation", user: "System", content: "Cold email response converted to CRM lead." },
-      { id: "t-15", date: "2026-06-14", type: "email", user: "Alex Rivera", content: "Updated proposal sent with security audits appended." }
+      { id: "t-15", date: "2026-06-14", type: "email", user: "C Adithi", content: "Updated proposal sent with security audits appended." }
     ]
   },
   {

@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useLeads } from "../context/LeadContext";
+import { useUser } from "../context/UserContext";
 import StatsCard from "../components/dashboard/StatsCard";
 import PipelineOverview from "../components/dashboard/PipelineOverview";
 import RecentLeads from "../components/dashboard/RecentLeads";
@@ -22,10 +23,11 @@ import {
  */
 export default function Dashboard() {
   const { leads, addLead, getStats } = useLeads();
+  const { user } = useUser();
   
   // Local state for dashboard lead modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(() => ({
     name: "",
     company: "",
     email: "",
@@ -33,8 +35,8 @@ export default function Dashboard() {
     status: "New",
     priority: "Medium",
     source: "Inbound",
-    owner: "Alex Rivera"
-  });
+    owner: user?.name || "C Adithi"
+  }));
 
   const stats = getStats();
 
@@ -52,7 +54,8 @@ export default function Dashboard() {
 
     addLead({
       ...form,
-      value: Number(form.value) || 0
+      value: Number(form.value) || 0,
+      owner: user?.name || "C Adithi"
     });
 
     // Reset form and close
@@ -64,7 +67,7 @@ export default function Dashboard() {
       status: "New",
       priority: "Medium",
       source: "Inbound",
-      owner: "Alex Rivera"
+      owner: user?.name || "C Adithi"
     });
     setIsModalOpen(false);
   };

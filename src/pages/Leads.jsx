@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { useLeads } from "../context/LeadContext";
+import { useUser } from "../context/UserContext";
 import LeadForm from "../components/leads/LeadForm";
 import LeadCard from "../components/leads/LeadCard";
 import LeadTable from "../components/leads/LeadTable";
@@ -32,6 +33,7 @@ import EmptyState from "../components/common/EmptyState";
 
 export default function Leads() {
   const { leads, addLead, updateLead, deleteLead } = useLeads();
+  const { user } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
   const leadIdParam = searchParams.get("id");
 
@@ -175,7 +177,7 @@ export default function Leads() {
           role:        "",
           value:       0,
           priority:    "Medium",
-          owner:       "Alex Rivera",
+          owner:       user?.name || "C Adithi",
           description: "",
         });
         toast.success(`${formData.name} added to pipeline`, {
@@ -186,7 +188,7 @@ export default function Leads() {
       }
       closeModal();
     },
-    [displayLead, addLead, updateLead, closeModal]
+    [displayLead, addLead, updateLead, closeModal, user]
   );
 
   /**

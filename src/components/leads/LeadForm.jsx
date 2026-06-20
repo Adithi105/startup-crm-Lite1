@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { User, Building2, Mail, Phone, Tag, Zap, AlertCircle, X } from "lucide-react";
 
@@ -122,8 +123,9 @@ export default function LeadForm({ initialData, onSubmit, onCancel }) {
 
   /**
    * Sync form state with initialData whenever the prop changes.
-   * Normalises legacy status/source values that might not match the new options.
+   * Uses JSON-stringified key comparison to avoid running on unrelated re-renders.
    */
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (initialData) {
       setForm({
@@ -141,7 +143,9 @@ export default function LeadForm({ initialData, onSubmit, onCancel }) {
     } else {
       setForm(EMPTY_FORM);
     }
-  }, [initialData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(initialData)]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // ── Validation ──────────────────────────────────────────────────────────
   const [errors, setErrors] = useState({});

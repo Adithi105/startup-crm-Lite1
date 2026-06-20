@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import PropTypes from "prop-types";
 
 /**
@@ -10,34 +10,31 @@ import PropTypes from "prop-types";
  * @param {Array<Object>} props.leads - Array of lead data objects.
  * @returns {React.JSX.Element}
  */
+
+// Hoisted outside component so they are stable references (no useMemo dep warning)
+const STAGES = ["New", "Contacted", "Qualified", "Proposal", "Won", "Lost"];
+
+const STAGE_STYLES = {
+  New: { bg: "bg-blue-600", text: "text-blue-600 dark:text-blue-400" },
+  Contacted: { bg: "bg-amber-500", text: "text-amber-600 dark:text-amber-500" },
+  Qualified: { bg: "bg-purple-500", text: "text-purple-600 dark:text-purple-400" },
+  Proposal: { bg: "bg-indigo-500", text: "text-indigo-600 dark:text-indigo-400" },
+  Won: { bg: "bg-green-500", text: "text-green-600 dark:text-green-400" },
+  Lost: { bg: "bg-red-550 bg-red-500", text: "text-red-600 dark:text-red-400" }
+};
+
 export default function PipelineOverview({ leads }) {
-  const stages = ["New", "Contacted", "Qualified", "Proposal", "Won", "Lost"];
-
-  // Colors matching the designated palette requirements
-  const stageStyles = {
-    New: { bg: "bg-blue-600", text: "text-blue-600 dark:text-blue-400" },
-    Contacted: { bg: "bg-amber-500", text: "text-amber-600 dark:text-amber-500" },
-    Qualified: { bg: "bg-purple-500", text: "text-purple-600 dark:text-purple-400" },
-    Proposal: { bg: "bg-indigo-500", text: "text-indigo-600 dark:text-indigo-400" },
-    Won: { bg: "bg-green-500", text: "text-green-600 dark:text-green-400" },
-    Lost: { bg: "bg-red-550 bg-red-500", text: "text-red-600 dark:text-red-400" }
-  };
-
   // Compile calculations
   const overviewData = useMemo(() => {
     const totalLeads = leads.length;
     if (totalLeads === 0) {
-      return stages.map(stage => ({ name: stage, count: 0, percentage: 0 }));
+      return STAGES.map(stage => ({ name: stage, count: 0, percentage: 0 }));
     }
 
-    return stages.map(stage => {
+    return STAGES.map(stage => {
       const count = leads.filter(l => l.status === stage).length;
       const percentage = Math.round((count / totalLeads) * 100);
-      return {
-        name: stage,
-        count,
-        percentage
-      };
+      return { name: stage, count, percentage };
     });
   }, [leads]);
 
@@ -63,7 +60,7 @@ export default function PipelineOverview({ leads }) {
         {totalLeadsCount > 0 ? (
           overviewData.map((seg) => {
             if (seg.count === 0) return null;
-            const style = stageStyles[seg.name] || { bg: "bg-gray-400" };
+            const style = STAGE_STYLES[seg.name] || { bg: "bg-gray-400" };
             return (
               <div
                 key={seg.name}
@@ -81,7 +78,7 @@ export default function PipelineOverview({ leads }) {
       {/* Grid Legend Breakdowns */}
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
         {overviewData.map((seg) => {
-          const style = stageStyles[seg.name] || { bg: "bg-gray-400", text: "text-gray-400" };
+          const style = STAGE_STYLES[seg.name] || { bg: "bg-gray-400", text: "text-gray-400" };
           return (
             <div 
               key={seg.name}

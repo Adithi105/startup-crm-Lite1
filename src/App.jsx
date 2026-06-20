@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, NavLink, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Users, 
@@ -12,12 +12,18 @@ import {
   ChevronRight, 
   Command
 } from "lucide-react";
-import { useTheme } from "./context/ThemeContext";
 import { useLeads } from "./context/LeadContext";
+import { useUser } from "./context/UserContext";
+import { Toaster } from "react-hot-toast";
 import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
 import Analytics from "./pages/Analytics";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import Docs from "./pages/Docs";
 import ThemeToggle from "./components/common/ThemeToggle";
+import ProfileDropdown from "./components/common/ProfileDropdown";
 
 
 
@@ -31,6 +37,7 @@ const navItems = [
 // Wrapper to get router context inside the App UI
 function AppShell() {
   const { leads, addLead } = useLeads();
+  const { user, isAuthenticated } = useUser();
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -67,8 +74,8 @@ function AppShell() {
     }
   };
   
-  // Add Lead Form State
-  const [newLeadForm, setNewLeadForm] = useState({
+  // Add Lead Form State (dynamic based on current user details)
+  const [newLeadForm, setNewLeadForm] = useState(() => ({
     name: "",
     email: "",
     phone: "",
@@ -78,9 +85,9 @@ function AppShell() {
     status: "New",
     priority: "Medium",
     source: "Inbound",
-    owner: "Alex Rivera",
+    owner: user?.name || "C Adithi",
     description: ""
-  });
+  }));
 
   // Hotkey listener for Search (/) and New Lead (Alt + N)
   useEffect(() => {
@@ -103,7 +110,10 @@ function AppShell() {
     e.preventDefault();
     if (!newLeadForm.name || !newLeadForm.company) return;
     
-    addLead(newLeadForm);
+    addLead({
+      ...newLeadForm,
+      owner: user?.name || "C Adithi"
+    });
     
     // Reset form & close
     setNewLeadForm({
@@ -116,7 +126,7 @@ function AppShell() {
       status: "New",
       priority: "Medium",
       source: "Inbound",
-      owner: "Alex Rivera",
+      owner: user?.name || "C Adithi",
       description: ""
     });
     setIsAddModalOpen(false);
@@ -131,6 +141,10 @@ function AppShell() {
         return "Leads Directory";
       case "/analytics":
         return "Performance Analytics";
+      case "/profile":
+        return "User Profile";
+      case "/settings":
+        return "Workspace Settings";
       default:
         return "CRM Dashboard";
     }
@@ -144,6 +158,15 @@ function AppShell() {
         l.email.toLowerCase().includes(searchQuery.toLowerCase())
       ).slice(0, 5)
     : [];
+
+  if (!isAuthenticated) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
+  }
 
   return (
     <div className="min-h-screen flex text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-900 transition-colors duration-200 relative overflow-hidden pb-16 md:pb-0">
@@ -209,15 +232,7 @@ function AppShell() {
   
           {/* User profile section in Drawer */}
           <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-xs font-semibold uppercase shrink-0 text-gray-800 dark:text-gray-200">
-                AR
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold truncate">Alex Rivera</p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">Acme Inc. (Admin)</p>
-              </div>
-            </div>
+            <ProfileDropdown isCollapsed={false} />
           </div>
         </aside>
       </div>
@@ -280,17 +295,7 @@ function AppShell() {
 
         {/* User / Org profile bottom info */}
         <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/30">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-xs font-semibold uppercase shrink-0 text-gray-800 dark:text-gray-200">
-              AR
-            </div>
-            {!isSidebarCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold truncate">Alex Rivera</p>
-                <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">Acme Inc. (Admin)</p>
-              </div>
-            )}
-          </div>
+          <ProfileDropdown isCollapsed={isSidebarCollapsed} />
         </div>
       </aside>
 
@@ -429,6 +434,10 @@ function AppShell() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/leads" element={<Leads />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/docs" element={<Docs />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </main>
@@ -604,6 +613,15 @@ function AppShell() {
           </div>
         </div>
       )}
+
+      {/* Global Toast Notifications — mounted once here so toasts work from any component */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          className: "shadow-lg text-xs font-semibold",
+          duration: 4000,
+        }}
+      />
     </div>
   );
 }
