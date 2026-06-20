@@ -92,7 +92,7 @@ export const getStatusDistribution = (leads) => {
 /**
  * Generates array of last 6 calendar months relative to reference date.
  */
-const getLastSixMonths = (referenceDate = new Date("2026-06-18")) => {
+const getLastSixMonths = (referenceDate = new Date()) => {
   const months = [];
   for (let i = 5; i >= 0; i--) {
     const d = new Date(referenceDate.getFullYear(), referenceDate.getMonth() - i, 1);
@@ -428,7 +428,7 @@ export const getTopPerformers = (leads) => {
  * Compiles GitHub-style activity contribution map.
  * Generates details for the last 30 days.
  */
-export const getActivityHeatmapData = (leads, referenceDate = new Date("2026-06-18")) => {
+export const getActivityHeatmapData = (leads, referenceDate = new Date()) => {
   const dataMap = {};
   
   // Initialize the last 30 days in dataMap with count: 0
