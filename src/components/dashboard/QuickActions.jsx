@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Plus, ListFilter, Download } from "lucide-react";
+import { formatDate } from "../../utils/dateHelpers";
 
 /**
  * QuickActions Component
@@ -50,7 +51,7 @@ export default function QuickActions({ onAddLeadClick, leads }) {
       lead.priority,
       lead.source,
       `"${(lead.owner || "").replace(/"/g, '""')}"`,
-      lead.dateCreated
+      formatDate(lead.createdAt)
     ]);
 
     const csvContent = [

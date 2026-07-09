@@ -12,15 +12,15 @@ import PropTypes from "prop-types";
  */
 
 // Hoisted outside component so they are stable references (no useMemo dep warning)
-const STAGES = ["New", "Contacted", "Qualified", "Proposal", "Won", "Lost"];
+const STAGES = ["New", "Contacted", "Meeting Scheduled", "Proposal Sent", "Won", "Lost"];
 
 const STAGE_STYLES = {
-  New: { bg: "bg-blue-600", text: "text-blue-600 dark:text-blue-400" },
-  Contacted: { bg: "bg-amber-500", text: "text-amber-600 dark:text-amber-500" },
-  Qualified: { bg: "bg-purple-500", text: "text-purple-600 dark:text-purple-400" },
-  Proposal: { bg: "bg-indigo-500", text: "text-indigo-600 dark:text-indigo-400" },
-  Won: { bg: "bg-green-500", text: "text-green-600 dark:text-green-400" },
-  Lost: { bg: "bg-red-550 bg-red-500", text: "text-red-600 dark:text-red-400" }
+  New:                { bg: "bg-blue-600",  text: "text-blue-600 dark:text-blue-400" },
+  Contacted:          { bg: "bg-amber-500", text: "text-amber-600 dark:text-amber-500" },
+  "Meeting Scheduled": { bg: "bg-violet-500", text: "text-violet-600 dark:text-violet-400" },
+  "Proposal Sent":     { bg: "bg-indigo-500", text: "text-indigo-600 dark:text-indigo-400" },
+  Won:                { bg: "bg-green-500", text: "text-green-600 dark:text-green-400" },
+  Lost:               { bg: "bg-red-500",   text: "text-red-600 dark:text-red-400" }
 };
 
 export default function PipelineOverview({ leads }) {

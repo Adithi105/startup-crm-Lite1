@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import PropTypes from "prop-types";
+import { formatDate } from "../../utils/dateHelpers";
 
 /**
  * RecentLeads Component
@@ -11,10 +12,16 @@ import PropTypes from "prop-types";
  * @returns {React.JSX.Element}
  */
 export default function RecentLeads({ leads }) {
-  // Sort leads by dateCreated (descending) and take top 5
+  // Sort leads by createdAt (descending) and take top 5
   const latestLeads = useMemo(() => {
     return [...leads]
-      .sort((a, b) => b.dateCreated.localeCompare(a.dateCreated) || b.id.localeCompare(a.id))
+      .sort((a, b) => {
+        // Safe sort: createdAt may be an ISO string or Date; fall back to "" so
+        // leads missing the field still sort last instead of throwing.
+        const dateA = a.createdAt || "";
+        const dateB = b.createdAt || "";
+        return dateB.localeCompare(dateA) || (b.id || "").localeCompare(a.id || "");
+      })
       .slice(0, 5);
   }, [leads]);
 
@@ -25,14 +32,14 @@ export default function RecentLeads({ leads }) {
         return "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-100 dark:border-blue-900/20";
       case "Contacted":
         return "bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400 border border-amber-100 dark:border-amber-900/20";
-      case "Qualified":
-        return "bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400 border border-purple-100 dark:border-purple-900/20";
-      case "Proposal":
+      case "Meeting Scheduled":
+        return "bg-violet-50 text-violet-700 dark:bg-violet-900/20 dark:text-violet-400 border border-violet-100 dark:border-violet-900/20";
+      case "Proposal Sent":
         return "bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/20";
       case "Won":
         return "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 border border-green-100 dark:border-green-900/20";
       case "Lost":
-        return "bg-red-550 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400 border border-red-100 dark:border-red-900/20";
+        return "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400 border border-red-100 dark:border-red-900/20";
       default:
         return "bg-gray-50 text-gray-700 dark:bg-gray-900/20 dark:text-gray-400 border border-gray-100 dark:border-gray-800";
     }
@@ -81,7 +88,7 @@ export default function RecentLeads({ leads }) {
                     </span>
                   </td>
                   <td className="px-5 py-3 text-gray-500 dark:text-gray-400 font-medium">
-                    {lead.dateCreated}
+                    {formatDate(lead.createdAt)}
                   </td>
                 </tr>
               ))
@@ -107,7 +114,7 @@ RecentLeads.propTypes = {
       name: PropTypes.string.isRequired,
       company: PropTypes.string.isRequired,
       status: PropTypes.string.isRequired,
-      dateCreated: PropTypes.string.isRequired
+      createdAt: PropTypes.string
     })
   ).isRequired
 };

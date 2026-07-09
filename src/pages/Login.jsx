@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Mail, Lock, ArrowRight, CheckCircle, ShieldAlert } from "lucide-react";
-import { useUser } from "../context/UserContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const { login } = useUser();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +17,7 @@ export default function Login() {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -27,28 +27,25 @@ export default function Login() {
     }
 
     setIsLoading(true);
+    const result = await login(email, password);
+    setIsLoading(false);
 
-    // Simulate authenticating for high-fidelity CRM feel
-    setTimeout(() => {
-      const success = login(email, password);
-      setIsLoading(false);
-      if (success) {
-        navigate("/");
-      } else {
-        setError("Invalid credentials. Please try again.");
-      }
-    }, 1000);
+    if (result.success) {
+      navigate("/");
+    } else {
+      setError(result.error || "Invalid credentials. Please try again.");
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-radial from-slate-900 via-gray-950 to-black text-white relative overflow-hidden font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-radial from-slate-900 via-gray-955 to-black text-white relative overflow-hidden font-sans">
       
       {/* Dynamic Background decorative blobs */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-600/10 blur-[120px] pointer-events-none" />
 
       {/* Main Glassmorphic Container */}
-      <div className="w-full max-w-md p-8 m-4 rounded-3xl bg-white/5 dark:bg-gray-900/40 backdrop-blur-md border border-white/10 dark:border-gray-800 shadow-2xl relative z-10 space-y-6">
+      <div className="w-full max-w-md p-8 m-4 rounded-3xl bg-white/5 dark:bg-gray-900/40 backdrop-blur-md border border-white/10 dark:border-gray-800 shadow-2xl relative z-10 space-y-6 animate-in fade-in duration-300">
         
         {/* Brand Header */}
         <div className="text-center space-y-2">
@@ -90,7 +87,6 @@ export default function Login() {
           <div className="space-y-1">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-gray-300">Password</label>
-              <span className="text-[10px] text-blue-400 hover:underline cursor-pointer select-none">Forgot password?</span>
             </div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500">
@@ -123,6 +119,14 @@ export default function Login() {
             )}
           </button>
         </form>
+
+        {/* Link to Register */}
+        <div className="text-center text-xs text-gray-400 pt-2">
+          New to SalesFlow?{" "}
+          <Link to="/register" className="text-blue-400 hover:underline font-bold">
+            Create an account
+          </Link>
+        </div>
 
         {/* Demo login shortcut card */}
         <div className="p-4 bg-white/5 border border-white/10 dark:border-gray-800 rounded-2xl space-y-2.5">

@@ -9,8 +9,8 @@ export const mapStatus = (status) => {
   const s = status.trim().toLowerCase();
   if (s === "new") return "New";
   if (s === "contacted") return "Contacted";
-  if (s === "meeting scheduled" || s === "meeting" || s === "qualified") return "Meeting";
-  if (s === "proposal sent" || s === "proposal") return "Proposal";
+  if (s === "meeting scheduled" || s === "meeting" || s === "qualified") return "Meeting Scheduled";
+  if (s === "proposal sent" || s === "proposal") return "Proposal Sent";
   if (s === "won") return "Won";
   if (s === "lost") return "Lost";
   return "New";
@@ -29,7 +29,7 @@ export const getLeadEventDate = (lead, eventType) => {
   if (type === "proposal" && lead.proposalAt) return lead.proposalAt;
   if (type === "meeting" && lead.meetingAt) return lead.meetingAt;
   if (type === "contacted" && lead.contactedAt) return lead.contactedAt;
-  if (type === "created") return lead.createdAt || lead.dateCreated;
+  if (type === "created") return lead.createdAt;
 
   // Search timeline
   if (lead.timeline && Array.isArray(lead.timeline)) {
@@ -44,8 +44,8 @@ export const getLeadEventDate = (lead, eventType) => {
   // Fallback based on current status and active timestamps
   if (type === "won" && lead.status === "Won") return lead.lastActive || lead.createdAt;
   if (type === "lost" && lead.status === "Lost") return lead.lastActive || lead.createdAt;
-  if (type === "proposal" && (lead.status === "Proposal" || lead.status === "Proposal Sent")) return lead.lastActive || lead.createdAt;
-  if (type === "meeting" && (lead.status === "Meeting" || lead.status === "Meeting Scheduled" || lead.status === "Qualified")) return lead.lastActive || lead.createdAt;
+  if (type === "proposal" && (lead.status === "Proposal Sent")) return lead.lastActive || lead.createdAt;
+  if (type === "meeting" && (lead.status === "Meeting Scheduled")) return lead.lastActive || lead.createdAt;
   if (type === "contacted" && lead.status === "Contacted") return lead.lastActive || lead.createdAt;
 
   return null;
@@ -61,8 +61,8 @@ export const getStatusDistribution = (leads) => {
   const counts = {
     New: 0,
     Contacted: 0,
-    Meeting: 0,
-    Proposal: 0,
+    "Meeting Scheduled": 0,
+    "Proposal Sent": 0,
     Won: 0,
     Lost: 0,
   };
@@ -276,13 +276,13 @@ export const getLeadSourceStats = (leads) => {
  * Compiles sequential funnel counts, conversions, and drop-offs.
  */
 export const getFunnelData = (leads) => {
-  const stages = ["New", "Contacted", "Meeting", "Proposal", "Won"];
+  const stages = ["New", "Contacted", "Meeting Scheduled", "Proposal Sent", "Won"];
   if (!Array.isArray(leads) || leads.length === 0) {
     return stages.map((stage) => ({ stage, count: 0, conversion: 0, dropoff: 0 }));
   }
 
   // Count how many leads reached or passed each stage
-  const counts = { New: 0, Contacted: 0, Meeting: 0, Proposal: 0, Won: 0 };
+  const counts = { New: 0, Contacted: 0, "Meeting Scheduled": 0, "Proposal Sent": 0, Won: 0 };
 
   leads.forEach((lead) => {
     const mapped = mapStatus(lead.status);
@@ -291,20 +291,20 @@ export const getFunnelData = (leads) => {
     } else if (mapped === "Contacted") {
       counts.New++;
       counts.Contacted++;
-    } else if (mapped === "Meeting") {
+    } else if (mapped === "Meeting Scheduled") {
       counts.New++;
       counts.Contacted++;
-      counts.Meeting++;
-    } else if (mapped === "Proposal") {
+      counts["Meeting Scheduled"]++;
+    } else if (mapped === "Proposal Sent") {
       counts.New++;
       counts.Contacted++;
-      counts.Meeting++;
-      counts.Proposal++;
+      counts["Meeting Scheduled"]++;
+      counts["Proposal Sent"]++;
     } else if (mapped === "Won") {
       counts.New++;
       counts.Contacted++;
-      counts.Meeting++;
-      counts.Proposal++;
+      counts["Meeting Scheduled"]++;
+      counts["Proposal Sent"]++;
       counts.Won++;
     } else if (mapped === "Lost") {
       // For lost leads, they had to start at New at least.
@@ -312,11 +312,11 @@ export const getFunnelData = (leads) => {
       // We check if they went through higher stages based on dates or timeline
       if (getLeadEventDate(lead, "proposal")) {
         counts.Contacted++;
-        counts.Meeting++;
-        counts.Proposal++;
+        counts["Meeting Scheduled"]++;
+        counts["Proposal Sent"]++;
       } else if (getLeadEventDate(lead, "meeting")) {
         counts.Contacted++;
-        counts.Meeting++;
+        counts["Meeting Scheduled"]++;
       } else if (getLeadEventDate(lead, "contacted")) {
         counts.Contacted++;
       }

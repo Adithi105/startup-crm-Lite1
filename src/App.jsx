@@ -19,11 +19,13 @@ import Dashboard from "./pages/Dashboard";
 import Leads from "./pages/Leads";
 import Analytics from "./pages/Analytics";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Docs from "./pages/Docs";
 import ThemeToggle from "./components/common/ThemeToggle";
 import ProfileDropdown from "./components/common/ProfileDropdown";
+import ProtectedRoute from "./routes/index";
 
 
 
@@ -163,6 +165,7 @@ function AppShell() {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );
@@ -431,12 +434,14 @@ function AppShell() {
         {/* 5. Page Routing Content Area */}
         <div className="flex-1 fluid-container py-4 pb-24 md:py-6 space-y-6">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/leads" element={<Leads />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/docs" element={<Docs />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/leads" element={<Leads />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/docs" element={<Docs />} />
+            </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
@@ -558,8 +563,8 @@ function AppShell() {
                   >
                     <option value="New">New</option>
                     <option value="Contacted">Contacted</option>
-                    <option value="Qualified">Qualified</option>
-                    <option value="Proposal">Proposal</option>
+                    <option value="Meeting Scheduled">Meeting Scheduled</option>
+                    <option value="Proposal Sent">Proposal Sent</option>
                     <option value="Won">Won</option>
                     <option value="Lost">Lost</option>
                   </select>

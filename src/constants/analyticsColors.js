@@ -2,11 +2,8 @@
 export const STATUS_COLORS = {
   New: "#94A3B8",
   Contacted: "#2563EB",
-  "Meeting Scheduled": "#F59E0B",
-  Meeting: "#F59E0B",
+  "Meeting Scheduled": "#8B5CF6",
   "Proposal Sent": "#7C3AED",
-  Proposal: "#7C3AED",
-  Qualified: "#06B6D4",
   Won: "#22C55E",
   Lost: "#EF4444",
 };

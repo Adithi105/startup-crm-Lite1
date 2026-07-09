@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { Pencil, Trash2 } from "lucide-react";
 import StatusBadge from "./StatusBadge";
+import { formatDate } from "../../utils/dateHelpers";
 
 // ─── LeadTable Component ────────────────────────────────────────────────────
 // Tabular view of all leads with sortable-looking columns.
@@ -81,7 +82,7 @@ export default function LeadTable({ leads, onEdit, onDelete }) {
 
                   {/* Date Added (hidden on small/medium screens) */}
                   <td className="p-4 hidden lg:table-cell text-gray-500 dark:text-gray-400 font-medium">
-                    {lead.dateCreated || "—"}
+                    {formatDate(lead.createdAt)}
                   </td>
 
                   {/* Action buttons */}
@@ -162,7 +163,7 @@ LeadTable.propTypes = {
       email:       PropTypes.string,
       status:      PropTypes.string.isRequired,
       source:      PropTypes.string,
-      dateCreated: PropTypes.string,
+      createdAt: PropTypes.string,
     })
   ).isRequired,
   /** Called with the full lead object when the edit icon is clicked */

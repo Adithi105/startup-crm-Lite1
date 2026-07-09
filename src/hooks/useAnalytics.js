@@ -49,7 +49,7 @@ const subtractDays = (dateStr, days) => {
 /**
  * Extracts a YYYY-MM-DD string from a lead's creation date field.
  * Handles ISO strings ("2026-05-10T00:00:00Z"), plain date strings
- * ("2026-05-10"), and falls back to dateCreated / timeline.
+ * ("2026-05-10"), and falls back to createdAt / timeline.
  */
 const getLeadDateStr = (lead) => {
   const raw = getLeadEventDate(lead, "created");
@@ -146,7 +146,7 @@ export function useAnalytics(leads) {
     console.log(`[Analytics] Filtered leads count (previous period): ${previous.length}`);
     if (current.length === 0) {
       console.warn(
-        "[Analytics] ⚠ No leads matched current period. Lead dateCreated values:",
+        "[Analytics] ⚠ No leads matched current period. Lead createdAt values:",
         leads.map((l) => ({ id: l.id, name: l.name, dateStr: getLeadDateStr(l) }))
       );
     }
