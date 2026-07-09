@@ -113,12 +113,52 @@ const leadSchema = new mongoose.Schema(
   }
 );
 
-// Indexes for optimized database queries
-// Compound index on owner and status for filtering leads by status for specific users/owners
+// ─────────────────────────────────────────────────────────────────────────────
+// Indexes
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Primary compound index: owner + createdAt (descending).
+ * Covers the default sort in getLeads (owner isolation + date sort) and the
+ * date-range filters used by getLeadStats & getMonthlyStats.
+ */
+leadSchema.index({ owner: 1, createdAt: -1 });
+
+/**
+ * Compound index: owner + status.
+ * Covers status-filtered list queries and the per-status grouping in
+ * getLeadStats aggregation.
+ */
 leadSchema.index({ owner: 1, status: 1 });
 
-// Index on email for fast lookups of lead details by email address
+/**
+ * Compound index: owner + source.
+ * Covers source-filtered list queries and the per-source grouping in
+ * getLeadStats aggregation.
+ */
+leadSchema.index({ owner: 1, source: 1 });
+
+/**
+ * Compound index: owner + name (ascending, collation-friendly).
+ * Covers the searchLeads autocomplete regex on name and sortBy='name' requests.
+ */
+leadSchema.index({ owner: 1, name: 1 });
+
+/**
+ * Compound index: owner + company (ascending).
+ * Covers the searchLeads autocomplete regex on company.
+ */
+leadSchema.index({ owner: 1, company: 1 });
+
+/**
+ * Single-field index on email for fast lookups by email address
+ * (also used by searchLeads regex on email).
+ */
 leadSchema.index({ email: 1 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Virtuals
+// ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * Virtual field to compute the age of the lead in days.

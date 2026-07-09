@@ -36,15 +36,22 @@ export const errorResponse = (res, message, statusCode = 500, errors = null) => 
  * @param {number} page - Current page number.
  * @param {number} limit - Items limit per page.
  */
+/**
+ * Sends a standardized paginated response.
+ * @param {Object} res   - Express response object.
+ * @param {Array}  data  - Paginated data array.
+ * @param {number} total - Total count of records matching the query.
+ * @param {number} page  - Current page number.
+ * @param {number} limit - Items per page.
+ */
 export const paginatedResponse = (res, data, total, page, limit) => {
+  const pages   = Math.max(1, Math.ceil(total / limit));
+  const hasNext = page < pages;
+  const hasPrev = page > 1;
+
   res.status(200).json({
     success: true,
     data,
-    pagination: {
-      total,
-      page,
-      limit,
-      pages: Math.ceil(total / limit)
-    }
+    pagination: { total, page, limit, pages, hasNext, hasPrev }
   });
 };

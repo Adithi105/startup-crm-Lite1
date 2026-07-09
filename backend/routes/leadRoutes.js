@@ -10,7 +10,8 @@ import {
   updateLeadStatus,
   deleteLead,
   getLeadStats,
-  getMonthlyStats
+  getMonthlyStats,
+  searchLeads
 } from '../controllers/leadController.js';
 
 const router = express.Router();
@@ -130,6 +131,10 @@ router.get('/stats/summary', getLeadStats);
 
 // Route 8: GET /api/leads/stats/monthly  →  6-month bar chart data
 router.get('/stats/monthly', getMonthlyStats);
+
+// Route 9: GET /api/leads/search?q=&limit=  →  Autocomplete quick-search
+// Must be registered BEFORE /:id to avoid 'search' being matched as a Mongo ObjectId
+router.get('/search', searchLeads);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Collection routes
