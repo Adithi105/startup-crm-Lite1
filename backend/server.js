@@ -43,6 +43,13 @@ checkRequiredEnvVars();
 // Create Express application instance
 const app = express();
 
+const isProduction = process.env.NODE_ENV === "production";
+
+// Enable trust proxy behind reverse proxies (like Railway) so client IPs are parsed correctly for rate limits
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
+
 // --- 1. Global Middleware Configuration ---
 
 // Secure HTTP headers with Helmet
@@ -52,26 +59,35 @@ app.use(helmet());
 //app.use(mongoSanitize());
 
 // Request logging improvement: combined in production, dev in development
-const isProduction = process.env.NODE_ENV === "production";
 app.use(morgan(isProduction ? "combined" : "dev"));
 
 // CORS configuration supporting frontend cross-origin requests
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  "https://your-app.vercel.app",
-];
+  process.env.FRONTEND_URL?.trim()?.replace(/\/$/, ""),
+  "https://startup-crm-lite1.vercel.app",
+  "http://localhost:5173",
+].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // allow requests with no origin (like mobile apps, postman, or curl)
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Allow requests with no origin (like mobile apps, curl, or postman)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      // Normalize origin by trimming whitespace and removing trailing slashes
+      const normalizedOrigin = origin.trim().replace(/\/$/, "");
+
+      if (allowedOrigins.includes(normalizedOrigin)) {
         callback(null, true);
       } else {
-        callback(new Error("Not allowed by CORS"));
+        // Do not throw an Error object (which returns 500). Instead, pass false to block CORS cleanly.
+        callback(null, false);
       }
     },
     credentials: true,
+    optionsSuccessStatus: 200,
   }),
 );
 
@@ -89,7 +105,9 @@ const authLimiter = rateLimit({
 });
 
 // Apply rate limiters to paths
-app.use("/api/auth/", authLimiter);
+// Limit auth rate limit only to login/register endpoints to prevent lockouts on profile fetching
+app.use("/api/auth/login", authLimiter);
+app.use("/api/auth/register", authLimiter);
 app.use("/api/", generalLimiter);
 
 // Limit request JSON payload to 10kb to mitigate DoS threats
